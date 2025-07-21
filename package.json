@@ -1,0 +1,59 @@
+{
+  "name": "@onlocation/tps-map",
+  "version": "2.0.0",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "tsup src/index.tsx --dts --format esm,cjs --minify",
+    "prepare": "npm run co:login",
+    "co:login": "aws codeartifact login --tool npm --repository npm-store --domain qcue"
+  },
+  "keywords": [
+    "react",
+    "leaflet"
+  ],
+  "author": "Dmytro Lysenko",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PrimeSport/qcue-npm"
+  },
+  "license": "ISC",
+  "description": "TPS map component, React 19",
+  "dependencies": {
+    "@onlocation/venue-map": "2.0.0",
+    "styled-components": "^6.1.18"
+  },
+  "peerDependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.5",
+    "@types/react-dom": "^19.1.5",
+    "prettier": "^3.5.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-scripts": "5.0.1",
+    "tsup": "^8.4.0",
+    "typescript": "^4.9.5"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "files": [
+    "dist",
+    "Readme.md",
+    "LICENSE"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts"
+}
