@@ -1,8 +1,12 @@
-// ---> Venue Map Component
-import TPSMap from "./components/TPSMap";
-export * from "./components/TPSMap/types";
-export default TPSMap;
+import ReactDOM from "react-dom/client";
 
-// For the dev only
-import { renderApp } from "./dev/devApp";
-renderApp();
+import TPSMapApp from "./dev/components/TPSMapApp";
+
+export function renderApp() {
+  const rootElement = document.getElementById("root");
+  if (!rootElement) {
+    throw new Error("Root element not found");
+  }
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(<TPSMapApp />);
+}
