@@ -1,20 +1,18 @@
 import React, { useMemo, useState } from "react";
 
-import TPSMap from "../../../components/TPSMap";
+import TPSMap from "@onlocation/tps-map";
 
-import { tickets } from "../../constants";
-import { IMapItem } from "../../../components/TPSMap/types/mapItem";
+import StyledMapWrapper from "./StyledMapWrapper";
 import RowTooltip from "./components/RowTooltip";
 import SectionTooltip from "./components/SectionTooltip";
 import Sidebar from "./components/Sidebar";
-
-import { IMapItemIdentifies } from "../../../components/TPSMap/types/common";
 import Watermarks from "./components/Watermarks";
-import { IWatermark } from "./types/ticket";
-import { getTicketState } from "./components/Watermarks/utils";
-import StyledMapWrapper from "./StyledMapWrapper";
 
-export const DEFAULT_COLOR = "#CABF93";
+import { tickets, DEFAULT_COLOR } from "./constants";
+import { getTicketState } from "./components/Watermarks/utils";
+
+import { IWatermark } from "./types/ticket";
+import type { IMapItem, IMapItemIdentifies } from "@onlocation/tps-map";
 
 type ItemAction = IMapItemIdentifies & { id?: number };
 
@@ -34,7 +32,7 @@ const TPSMapApp = () => {
     selectedWatermark: undefined,
   });
   const [level, setLevel] = useState<"row" | "section">("section");
-  const [token, setToken] = useState<string>("");
+  const [token, setToken] = useState<string | null>(null);
 
   const selectedTicketIds = useMemo(() => {
     if (actionState.selectedWatermark) {
@@ -147,64 +145,66 @@ const TPSMapApp = () => {
         setToken={(token) => setToken(token)}
       />
       <StyledMapWrapper style={{ flex: "auto", height: "100%" }}>
-        <TPSMap
-          level={level}
-          onLevelChange={setLevel}
-          venueLayoutId={560501}
-          token={token}
-          items={mapItems}
-          hoveredItem={actionState.hover || undefined}
-          focusedItem={actionState.focus || undefined}
-          selectedItems={actionState.selected || undefined}
-          // mapOptions={{ dragging: false }}
-          defaultExtraContentOptions={{
-            levelWrapperClassName: "level-wrapper",
-          }}
-          extraContent={{
-            "bottom-left": {
-              component: (
-                <Watermarks
-                  tickets={tickets}
-                  onSelect={handleSelectWatermark}
-                />
-              ),
-            },
-          }}
-          useShadeDown={["select"]}
-          useMapSelect
-          onItemHover={(item) => {
-            handleHover(item);
-          }}
-          onItemClick={(item) => {
-            handleClick(item);
-          }}
-          onItemsSelect={(item, items) => {
-            console.log("map selection: ", item, items);
-            handleSelect(items);
-          }}
-          // onMapHome={() => {
-          //   console.log("map reset view")
-          // }}
-          // onZoomChange={(zoom) => console.log("zoom change: ", zoom)}
-          defaultItemStyles={{
-            interactive: {
-              inactive: {
-                fillColor: "#CABF93",
-                fillOpacity: 1,
+        {token ? (
+          <TPSMap
+            level={level}
+            onLevelChange={setLevel}
+            venueLayoutId={560501}
+            token={token}
+            items={mapItems}
+            hoveredItem={actionState.hover || undefined}
+            focusedItem={actionState.focus || undefined}
+            selectedItems={actionState.selected || undefined}
+            // mapOptions={{ dragging: false }}
+            defaultExtraContentOptions={{
+              levelWrapperClassName: "level-wrapper",
+            }}
+            extraContent={{
+              "bottom-left": {
+                component: (
+                  <Watermarks
+                    tickets={tickets}
+                    onSelect={handleSelectWatermark}
+                  />
+                ),
               },
-              active: {
-                fillColor: "#CABF93",
-                fillOpacity: 1,
-                color: "black",
-                opacity: 1,
-                weight: 2,
+            }}
+            useShadeDown={["select"]}
+            useMapSelect
+            onItemHover={(item) => {
+              handleHover(item);
+            }}
+            onItemClick={(item) => {
+              handleClick(item);
+            }}
+            onItemsSelect={(item, items) => {
+              console.log("map selection: ", item, items);
+              handleSelect(items);
+            }}
+            // onMapHome={() => {
+            //   console.log("map reset view")
+            // }}
+            // onZoomChange={(zoom) => console.log("zoom change: ", zoom)}
+            defaultItemStyles={{
+              interactive: {
+                inactive: {
+                  fillColor: "#CABF93",
+                  fillOpacity: 1,
+                },
+                active: {
+                  fillColor: "#CABF93",
+                  fillOpacity: 1,
+                  color: "black",
+                  opacity: 1,
+                  weight: 2,
+                },
               },
-            },
-            noninteractive: {
-              fillColor: "lightgray",
-            },
-          }}
-        />
+              noninteractive: {
+                fillColor: "lightgray",
+              },
+            }}
+          />
+        ) : null}
       </StyledMapWrapper>
     </div>
   );

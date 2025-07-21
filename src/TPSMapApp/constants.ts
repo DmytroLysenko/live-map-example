@@ -1,4 +1,4 @@
-import { ITicket, IWatermark } from "./components/TPSMapApp/types/ticket";
+import { ITicket, IWatermark } from "./types/ticket";
 
 const greenWatermark: IWatermark = {
   id: 1,
@@ -93,3 +93,5 @@ export const tickets: ITicket[] = [
 ];
 
 export const sections: any = [];
+
+export const DEFAULT_COLOR = "#CABF93";

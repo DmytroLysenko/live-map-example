@@ -1,9 +1,9 @@
-import React, { memo } from "react"
-import StyledTooltipContainer from "../StyledTooltipContainer"
+import React from "react";
+import StyledTooltipContainer from "../StyledTooltipContainer";
 
 interface IProps {
-  color: string
-  name: string
+  color: string;
+  name: string;
 }
 
 const SectionTooltip = ({ color, name }: IProps) => {
@@ -14,7 +14,7 @@ const SectionTooltip = ({ color, name }: IProps) => {
         <div>Section: {name}</div>
       </div>
     </StyledTooltipContainer>
-  )
-}
+  );
+};
 
-export default SectionTooltip
+export default SectionTooltip;

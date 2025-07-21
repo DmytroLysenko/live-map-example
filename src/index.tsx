@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom/client";
 
-import TPSMapApp from "./dev/components/TPSMapApp";
+import TPSMapApp from "./TPSMapApp";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {

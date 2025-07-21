@@ -1,9 +1,10 @@
 import React from "react";
 
 import TicketItem from "./components/TicketItem";
+
 import { ITicket } from "../../types/ticket";
 import { IOLActionState } from "../../TPSMapApp";
-import { IMapItemIdentifies } from "../../../../../components/TPSMap/types/common";
+import type { IMapItemIdentifies } from "@onlocation/tps-map";
 
 interface IProps {
   tickets: ITicket[];
@@ -11,7 +12,7 @@ interface IProps {
   actionState: IOLActionState;
   onHover: (id: IMapItemIdentifies | undefined) => void;
   onClick: (id: IMapItemIdentifies) => void;
-  setToken: (token: string) => void;
+  setToken: (token: string | null) => void;
 }
 
 const Sidebar = ({
@@ -36,7 +37,7 @@ const Sidebar = ({
         <h4 style={{ fontSize: "16px", margin: "10px" }}>Token</h4>
         <input
           type="password"
-          onChange={({ target: { value } }) => setToken(value)}
+          onChange={({ target: { value } }) => setToken(value || null)}
         />
       </div>
       <h4 style={{ fontSize: "16px", margin: "10px" }}>Tickets</h4>

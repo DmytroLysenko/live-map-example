@@ -1,15 +1,16 @@
-import React from "react"
-import { ITicket } from "../../../../types/ticket"
-import { IMapItemIdentifies } from "../../../../../../../components/TPSMap/types/common"
+import React from "react";
+
+import { ITicket } from "../../../../types/ticket";
+import type { IMapItemIdentifies } from "@onlocation/tps-map";
 
 interface IProps {
-  ticket: ITicket
-  active: boolean
-  onHover: (id: IMapItemIdentifies | undefined) => void
-  onClick: (id: IMapItemIdentifies) => void
+  ticket: ITicket;
+  active: boolean;
+  onHover: (id: IMapItemIdentifies | undefined) => void;
+  onClick: (id: IMapItemIdentifies) => void;
 }
 const TicketItem = ({ ticket, active, onClick, onHover }: IProps) => {
-  const { watermarks } = ticket
+  const { watermarks } = ticket;
   return (
     <div
       style={{
@@ -22,7 +23,9 @@ const TicketItem = ({ ticket, active, onClick, onHover }: IProps) => {
         onHover({ sectionName: ticket.section, rowName: ticket.row })
       }
       onMouseLeave={() => onHover(undefined)}
-      onClick={() => onClick({ sectionName: ticket.section, rowName: ticket.row })}
+      onClick={() =>
+        onClick({ sectionName: ticket.section, rowName: ticket.row })
+      }
     >
       <strong>Ticket ID: {ticket.id}</strong>
       <div>Section: {`${ticket.section}`}</div>
@@ -58,7 +61,7 @@ const TicketItem = ({ ticket, active, onClick, onHover }: IProps) => {
             </div>
           ))}
     </div>
-  )
-}
+  );
+};
 
-export default TicketItem
+export default TicketItem;
