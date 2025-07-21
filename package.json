@@ -1,11 +1,14 @@
 {
   "name": "@onlocation/tps-map",
   "version": "2.0.0",
+  "homepage": "https://github.com/DmytroLysenko/live-map-example",
   "scripts": {
     "start": "react-scripts start",
     "build": "tsup src/index.tsx --dts --format esm,cjs --minify",
     "prepare": "npm run co:login",
-    "co:login": "aws codeartifact login --tool npm --repository npm-store --domain qcue"
+    "co:login": "aws codeartifact login --tool npm --repository npm-store --domain qcue",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "keywords": [
     "react",
@@ -20,6 +23,7 @@
   "description": "TPS map component, React 19",
   "dependencies": {
     "@onlocation/venue-map": "2.0.0",
+    "gh-pages": "^6.3.0",
     "styled-components": "^6.1.18"
   },
   "peerDependencies": {
