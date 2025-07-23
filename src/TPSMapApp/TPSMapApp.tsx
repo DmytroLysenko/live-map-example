@@ -140,6 +140,10 @@ const TPSMapApp = () => {
     setTicketState(getTicketState(tickets));
   }, [tickets]);
 
+  useEffect(() => {
+    setTickets([]);
+  }, [layoutId]);
+
   return (
     <div
       style={{
