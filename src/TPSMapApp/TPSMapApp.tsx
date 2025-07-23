@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import TPSMap from "@onlocation/tps-map";
 
@@ -8,10 +8,10 @@ import SectionTooltip from "./components/SectionTooltip";
 import Sidebar from "./components/Sidebar";
 import Watermarks from "./components/Watermarks";
 
-import { tickets, DEFAULT_COLOR } from "./constants";
+import { DEFAULT_COLOR } from "./constants";
 import { getTicketState } from "./components/Watermarks/utils";
 
-import { IWatermark } from "./types/ticket";
+import { ITicket, IWatermark } from "./types/ticket";
 import type { IMapItem, IMapItemIdentifies } from "@onlocation/tps-map";
 
 type ItemAction = IMapItemIdentifies & { id?: number };
@@ -24,6 +24,7 @@ export interface IOLActionState {
 }
 
 const TPSMapApp = () => {
+  const [tickets, setTickets] = useState<ITicket[]>([]);
   const [ticketState, setTicketState] = useState(getTicketState(tickets));
   const [actionState, setActionState] = useState<IOLActionState>({
     hover: undefined,
@@ -33,6 +34,7 @@ const TPSMapApp = () => {
   });
   const [level, setLevel] = useState<"row" | "section">("section");
   const [token, setToken] = useState<string | null>(null);
+  const [layoutId, setLayoutId] = useState<string>("560501");
 
   const selectedTicketIds = useMemo(() => {
     if (actionState.selectedWatermark) {
@@ -134,8 +136,18 @@ const TPSMapApp = () => {
     }));
   };
 
+  useEffect(() => {
+    setTicketState(getTicketState(tickets));
+  }, [tickets]);
+
   return (
-    <div style={{ display: "flex", height: "900px" }}>
+    <div
+      style={{
+        display: "flex",
+        height: "100%",
+        overflow: "hidden",
+      }}
+    >
       <Sidebar
         tickets={tickets}
         selectedTickets={selectedTicketIds}
@@ -143,13 +155,20 @@ const TPSMapApp = () => {
         onHover={handleHover}
         onClick={handleClick}
         setToken={(token) => setToken(token)}
+        layoutId={layoutId}
+        onLayoutIdChange={(id) => setLayoutId(id)}
+        onAddTicket={(newTicket) =>
+          setTickets((prev) => [{ ...newTicket, id: prev.length + 1 }, ...prev])
+        }
       />
       <StyledMapWrapper style={{ flex: "auto", height: "100%" }}>
         {token ? (
           <TPSMap
             level={level}
             onLevelChange={setLevel}
-            venueLayoutId={560501}
+            venueLayoutId={
+              isNaN(Number(layoutId)) ? undefined : Number(layoutId)
+            }
             token={token}
             items={mapItems}
             hoveredItem={actionState.hover || undefined}
@@ -200,7 +219,8 @@ const TPSMapApp = () => {
                 },
               },
               noninteractive: {
-                fillColor: "lightgray",
+                // fillColor: "lightgray",
+                // fillColor: "white",
               },
             }}
           />

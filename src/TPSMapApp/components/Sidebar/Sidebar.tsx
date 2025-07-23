@@ -2,9 +2,14 @@ import React from "react";
 
 import TicketItem from "./components/TicketItem";
 
-import { ITicket } from "../../types/ticket";
+import { ITicket, NewTicket } from "../../types/ticket";
 import { IOLActionState } from "../../TPSMapApp";
 import type { IMapItemIdentifies } from "@onlocation/tps-map";
+import Tickets from "./components/Tickets";
+import LayoutFilter from "./components/LayoutFilter/LayoutFilter";
+import TokenFilter from "./components/TokenFilter";
+import Status from "./components/Status";
+import NewTicketForm from "./components/NewTicketForm";
 
 interface IProps {
   tickets: ITicket[];
@@ -13,6 +18,9 @@ interface IProps {
   onHover: (id: IMapItemIdentifies | undefined) => void;
   onClick: (id: IMapItemIdentifies) => void;
   setToken: (token: string | null) => void;
+  layoutId: string;
+  onLayoutIdChange: (id: string) => void;
+  onAddTicket: (newTicket: NewTicket) => void;
 }
 
 const Sidebar = ({
@@ -22,69 +30,32 @@ const Sidebar = ({
   setToken,
   actionState,
   selectedTickets,
+  layoutId,
+  onLayoutIdChange,
+  onAddTicket,
 }: IProps) => {
   return (
     <div
       style={{
         width: "300px",
         height: "100%",
-        borderRight: "3px dashed gray",
-        overflow: "auto",
+        overflow: "hidden",
         fontSize: "12px",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <div>
-        <h4 style={{ fontSize: "16px", margin: "10px" }}>Token</h4>
-        <input
-          type="password"
-          onChange={({ target: { value } }) => setToken(value || null)}
-        />
-      </div>
-      <h4 style={{ fontSize: "16px", margin: "10px" }}>Tickets</h4>
-      <div>
-        <strong>Hover:</strong>
-        <div>Section: {`${actionState.hover?.sectionName}`}</div>
-        <div>Row: {`${actionState.hover?.rowName}`}</div>
-      </div>
-      <div>
-        <strong>Focus:</strong>
-        <div>Section: {`${actionState.focus?.sectionName}`}</div>
-        <div>Row: {`${actionState.focus?.rowName}`}</div>
-      </div>
-      {tickets
-        .filter((ticket) => {
-          if (selectedTickets.length) {
-            return selectedTickets.includes(ticket.id);
-          }
-          return true;
-        })
-        .map((ticket) => {
-          let active = false;
-          const currentFocus = actionState.focus || actionState.hover;
-          if (currentFocus) {
-            if (
-              !currentFocus.rowName &&
-              ticket.section === currentFocus.sectionName
-            ) {
-              active = true;
-            } else if (
-              currentFocus.rowName === ticket.row &&
-              currentFocus.sectionName === ticket.section
-            ) {
-              active = true;
-            }
-          }
-
-          return (
-            <TicketItem
-              active={active}
-              key={ticket.id}
-              ticket={ticket}
-              onClick={onClick}
-              onHover={onHover}
-            />
-          );
-        })}
+      <TokenFilter onTokenChange={setToken} />
+      <LayoutFilter layoutId={layoutId} onChange={onLayoutIdChange} />
+      <Status actionState={actionState} />
+      <NewTicketForm onAddTicket={onAddTicket} />
+      <Tickets
+        tickets={tickets}
+        selectedTickets={selectedTickets}
+        actionState={actionState}
+        onHover={onHover}
+        onClick={onClick}
+      />
     </div>
   );
 };

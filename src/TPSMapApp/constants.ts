@@ -19,7 +19,7 @@ const blueWatermark: IWatermark = {
   sortOrder: 3,
 };
 
-export const tickets: ITicket[] = [
+export const TICKETS: ITicket[] = [
   {
     id: 1,
     section: "1",

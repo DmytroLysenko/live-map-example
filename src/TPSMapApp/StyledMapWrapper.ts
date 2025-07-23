@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled from "styled-components";
 
 const StyledMapWrapper = styled.div`
   .level-wrapper {
@@ -9,6 +9,6 @@ const StyledMapWrapper = styled.div`
     // }
     background-color: red;
   }
-`
+`;
 
-export default StyledMapWrapper
+export default StyledMapWrapper;

@@ -1,4 +1,5 @@
 import ReactDOM from "react-dom/client";
+import './styles.css'
 
 import TPSMapApp from "./TPSMapApp";
 

@@ -13,3 +13,5 @@ export interface IWatermark {
   watermarkName: string;
   sortOrder: number;
 }
+
+export type NewTicket = Pick<ITicket, "row" | "section">;
