@@ -34,7 +34,7 @@ const TPSMapApp = () => {
   });
   const [level, setLevel] = useState<"row" | "section">("section");
   const [token, setToken] = useState<string | null>(null);
-  const [layoutId, setLayoutId] = useState<string>("560501");
+  const [layoutId, setLayoutId] = useState<string>("18851");
 
   const selectedTicketIds = useMemo(() => {
     if (actionState.selectedWatermark) {
@@ -223,7 +223,7 @@ const TPSMapApp = () => {
                 },
               },
               noninteractive: {
-                // fillColor: "lightgray",
+                fillColor: "#80808080",
                 // fillColor: "white",
               },
             }}

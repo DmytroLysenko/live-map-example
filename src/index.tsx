@@ -1,5 +1,6 @@
 import ReactDOM from "react-dom/client";
-import './styles.css'
+import "./styles.css";
+import "@onlocation/tps-map/dist/index.css";
 
 import TPSMapApp from "./TPSMapApp";
 
