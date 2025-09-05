@@ -35,6 +35,7 @@ const TPSMapApp = () => {
   const [level, setLevel] = useState<"row" | "section">("section");
   const [token, setToken] = useState<string | null>(null);
   const [layoutId, setLayoutId] = useState<string>("18851");
+  const [labelingByData, setLabelingByData] = useState(true);
 
   const selectedTicketIds = useMemo(() => {
     if (actionState.selectedWatermark) {
@@ -159,6 +160,8 @@ const TPSMapApp = () => {
         onHover={handleHover}
         onClick={handleClick}
         setToken={(token) => setToken(token)}
+        setLabelingByData={(value) => setLabelingByData(value)}
+        labelingByData={labelingByData}
         layoutId={layoutId}
         onLayoutIdChange={(id) => setLayoutId(id)}
         onAddTicket={(newTicket) =>
@@ -178,6 +181,7 @@ const TPSMapApp = () => {
             hoveredItem={actionState.hover || undefined}
             focusedItem={actionState.focus || undefined}
             selectedItems={actionState.selected || undefined}
+            labelingByData={labelingByData}
             // mapOptions={{ dragging: false }}
             defaultExtraContentOptions={{
               levelWrapperClassName: "level-wrapper",
