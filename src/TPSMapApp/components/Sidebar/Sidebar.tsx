@@ -10,6 +10,7 @@ import LayoutFilter from "./components/LayoutFilter/LayoutFilter";
 import TokenFilter from "./components/TokenFilter";
 import Status from "./components/Status";
 import NewTicketForm from "./components/NewTicketForm";
+import Labeling from "./components/Labeling";
 
 interface IProps {
   tickets: ITicket[];
@@ -18,6 +19,8 @@ interface IProps {
   onHover: (id: IMapItemIdentifies | undefined) => void;
   onClick: (id: IMapItemIdentifies) => void;
   setToken: (token: string | null) => void;
+  setLabelingByData: (value: boolean) => void;
+  labelingByData: boolean;
   layoutId: string;
   onLayoutIdChange: (id: string) => void;
   onAddTicket: (newTicket: NewTicket) => void;
@@ -33,6 +36,8 @@ const Sidebar = ({
   layoutId,
   onLayoutIdChange,
   onAddTicket,
+  setLabelingByData,
+  labelingByData,
 }: IProps) => {
   return (
     <div
@@ -45,6 +50,7 @@ const Sidebar = ({
         flexDirection: "column",
       }}
     >
+      <Labeling onLabelingChange={setLabelingByData} value={labelingByData} />
       <TokenFilter onTokenChange={setToken} />
       <LayoutFilter layoutId={layoutId} onChange={onLayoutIdChange} />
       <Status actionState={actionState} />
