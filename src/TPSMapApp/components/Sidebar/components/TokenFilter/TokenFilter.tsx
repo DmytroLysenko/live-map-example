@@ -8,12 +8,12 @@ interface IProps {
 
 const TokenFilter = ({ onTokenChange }: IProps) => {
   return (
-    <Section>
-      <Label label="Token" />
+    <Section style={{ display: "flex", gap: 10, alignItems: "center" }}>
       <input
         type="password"
         onChange={({ target: { value } }) => onTokenChange(value.trim())}
       />
+      <Label label="Token" />
     </Section>
   );
 };

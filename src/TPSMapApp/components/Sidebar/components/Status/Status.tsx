@@ -1,12 +1,12 @@
 import React from "react";
 
 import Label from "../Label";
-
-import { IOLActionState } from "../../../../TPSMapApp";
 import Section from "../Section";
 
+import { IActionState } from "../../../../types";
+
 interface IProps {
-  actionState: IOLActionState;
+  actionState: IActionState;
 }
 
 const Status = ({ actionState }: IProps) => {

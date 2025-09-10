@@ -1,51 +1,39 @@
-import React, { SyntheticEvent, useEffect, useState } from "react";
+import React from "react";
 
 import StyledWatermarksContainer from "./StyledWatermarksContainer";
 
-import { getTicketState } from "./utils";
-
-import { ITicket, IWatermark } from "../../types/ticket";
+import { IWatermark } from "../../types";
+import { WATERMARKS_MAP_BY_STRING_ID } from "../../constants";
 
 interface IProps {
-  tickets: ITicket[];
-  onSelect: (watermark: IWatermark) => void;
+  selectedId: IWatermark["id"] | undefined;
+  watermarks: IWatermark[];
+  onSelect: (stringId: IWatermark | undefined) => void;
 }
 
-const Watermarks = ({ tickets, onSelect }: IProps) => {
-  const [{ watermarks }, setState] = useState(getTicketState(tickets));
-
-  const disableClickPropagation = (e: SyntheticEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-  const handleWatermarkClick = (e: SyntheticEvent, watermark: IWatermark) => {
-    disableClickPropagation(e);
-    onSelect(watermark);
-  };
-
-  useEffect(() => {
-    setState(getTicketState(tickets));
-  }, [tickets]);
-
-  if (!watermarks.length) return <></>;
+const Watermarks = ({ selectedId, watermarks, onSelect }: IProps) => {
   return (
     <StyledWatermarksContainer>
-      {watermarks.map((watermark) => (
-        <button
-          key={watermark.id}
-          style={{
-            backgroundColor: watermark.color,
-            display: "flex",
-            alignItems: "center",
-            gap: 4,
-          }}
-          onDoubleClick={disableClickPropagation}
-          onDoubleClickCapture={disableClickPropagation}
-          onClick={(e) => handleWatermarkClick(e, watermark)}
-        >
-          {watermark.watermarkName} ({watermark.sortOrder})
-        </button>
-      ))}
+      <select
+        id="watermark-select"
+        value={typeof selectedId === undefined ? "none" : `${selectedId}`}
+        onChange={({ target: { value } }) => {
+          const watermark =
+            value === "none"
+              ? undefined
+              : WATERMARKS_MAP_BY_STRING_ID.get(value);
+          onSelect(watermark);
+        }}
+      >
+        <option value={"none"}>None</option>
+        {watermarks
+          .sort((a, b) => a.sortOrder - b.sortOrder)
+          .map((item) => (
+            <option key={`${item.id}`} value={item.id}>
+              {item.watermarkName}
+            </option>
+          ))}
+      </select>
     </StyledWatermarksContainer>
   );
 };

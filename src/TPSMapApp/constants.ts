@@ -1,97 +1,126 @@
-import { ITicket, IWatermark } from "./types/ticket";
+import { IMapProps } from "@onlocation/tps-map";
+import {
+  IFlyToState,
+  IActionState,
+  IMapSizeState,
+  ITicket,
+  IWatermark,
+  WatermarkColors,
+} from "./types";
 
-const greenWatermark: IWatermark = {
-  id: 1,
-  watermarkName: "Green",
-  color: "lightgreen",
-  sortOrder: 1,
-};
-const redWatermark: IWatermark = {
-  id: 2,
-  watermarkName: "Red",
-  color: "red",
-  sortOrder: 2,
-};
-const blueWatermark: IWatermark = {
-  id: 3,
-  watermarkName: "Blue",
-  color: "lightblue",
-  sortOrder: 3,
-};
+export const WATERMARKS: IWatermark[] = Object.entries(WatermarkColors).map(
+  ([key, value], idx) => {
+    return {
+      id: idx + 1,
+      sortOrder: idx + 1,
+      watermarkName: key,
+      color: value,
+    };
+  }
+);
 
-export const TICKETS: ITicket[] = [
+export const WATERMARKS_MAP_BY_STRING_ID = WATERMARKS.reduce((result, item) => {
+  result.set(`${item.id}`, item);
+  return result;
+}, new Map<string, IWatermark>());
+
+export const DEFAULT_TICKETS: ITicket[] = [
   {
     id: 1,
     section: "1",
-    row: "1",
-    // sectionId: 8154001,
-    // rowId: 96676901,
-    watermarks: [greenWatermark],
+    row: "E",
+    price: 80,
+    watermarks: WATERMARKS.length ? [WATERMARKS[0]] : undefined,
   },
   {
     id: 2,
     section: "1",
-    row: "2",
-    // sectionId: 8154001,
-    // rowId: 96676951,
-    watermarks: [redWatermark],
+    row: "F",
+    price: 100,
+    watermarks:
+      WATERMARKS.length > 3
+        ? [WATERMARKS[2], WATERMARKS[WATERMARKS.length - 1]]
+        : undefined,
   },
-  {
-    id: 3,
-    section: "2",
-    row: "1",
-    // sectionId: 8154051,
-    // rowId: 96677851
-  },
+  { id: 3, section: "10", row: "E", price: 100 },
   {
     id: 4,
-    section: "3",
-    row: "1",
-    // sectionId: 8154101,
-    // rowId: 96678851
+    section: "11",
+    row: "D",
+    price: 120,
+    watermarks:
+      WATERMARKS.length > 2
+        ? [WATERMARKS[0], WATERMARKS[WATERMARKS.length - 1]]
+        : undefined,
   },
   {
     id: 5,
-    section: "7",
-    row: "1",
-    // sectionId: 8154201,
-    // rowId: 96680001,
-    watermarks: [blueWatermark],
+    section: "15",
+    row: "R",
+    price: 160,
+    watermarks: WATERMARKS.length > 2 ? [WATERMARKS[1]] : undefined,
   },
   {
     id: 6,
-    section: "7",
-    row: "2",
-    // sectionId: 8154201,
-    // rowId: 96680051,
-    watermarks: [blueWatermark],
+    section: "16",
+    row: "R",
+    price: 160,
+    watermarks: WATERMARKS.length > 2 ? [WATERMARKS[1]] : undefined,
   },
   {
     id: 7,
-    section: "7",
-    row: "3",
-    // sectionId: 8154201,
-    // rowId: 96680101,
-    watermarks: [blueWatermark],
+    section: "5",
+    row: "R",
+    price: 140,
   },
   {
     id: 8,
-    section: "7",
-    row: "4",
-    // sectionId: 8154201,
-    // rowId: 96680151,
-    watermarks: [blueWatermark],
-  },
-  {
-    id: 9,
-    section: "8",
-    row: "1",
-    // sectionId: 8154251,
-    // rowId: 96680951,
-    watermarks: [redWatermark, blueWatermark],
+    section: "6",
+    row: "R",
+    price: 180,
   },
 ];
 
+export const DEFAULT_ACTION_STATE: IActionState = {
+  hover: undefined,
+  focus: undefined,
+  selected: [],
+  selectedWatermark: undefined,
+};
+
+export const DEFAULT_FLY_TO_STATE: IFlyToState = {
+  hover: { value: false, fitToCenter: false },
+  focus: { value: true, fitToCenter: false },
+  select: { value: false, fitToCenter: true },
+};
+
+export const DEFAULT_MAP_SIZE_STATE: IMapSizeState = {};
+export const DEFAULT_ITEM_STYLES_STATE: IMapProps["defaultItemStyles"] = {
+  interactive: {
+    active: {
+      fillColor: "#FEC787",
+      fillOpacity: 1,
+      color: "black",
+      opacity: 1,
+      weight: 2,
+    },
+    inactive: {
+      fillColor: "#BFE5BB",
+      fillOpacity: 1,
+      color: "#C9C9C9",
+      opacity: 1,
+      weight: 1,
+    },
+  },
+  noninteractive: {
+    fillColor: "#E7E7E7",
+    fillOpacity: 1,
+    color: "#C9C9C9",
+    opacity: 1,
+    weight: 1,
+  },
+};
+
 export const sections: any = [];
 
-export const DEFAULT_COLOR = "#CABF93";
+export const DEFAULT_COLOR = "#BFE5BB";

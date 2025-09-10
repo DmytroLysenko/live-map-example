@@ -4,20 +4,20 @@ import Section from "../Section";
 
 interface IProps {
   value: boolean;
-  onLabelingChange: (value: boolean) => void;
+  setWheelchairs: (value: boolean) => void;
 }
 
-const Labeling = ({ onLabelingChange, value }: IProps) => {
+const Wheelchairs = ({ setWheelchairs, value }: IProps) => {
   return (
     <Section style={{ display: "flex", gap: 10, alignItems: "center" }}>
       <input
         type="checkbox"
         checked={value}
-        onChange={({ target: { checked } }) => onLabelingChange(checked)}
+        onChange={({ target: { checked } }) => setWheelchairs(checked)}
       />
-      <Label label="Labeling by data" />
+      <Label label="Wheelchairs" />
     </Section>
   );
 };
 
-export default Labeling;
+export default Wheelchairs;
