@@ -1,15 +1,18 @@
 {
   "files": {
     "main.css": "/live-map-example/static/css/main.917d8bca.css",
-    "main.js": "/live-map-example/static/js/main.21ce7713.js",
+    "main.js": "/live-map-example/static/js/main.91272f9b.js",
     "static/media/Inter-Italic-VariableFont_opsz_wght-3WBQ6O2W.ttf": "/live-map-example/static/media/Inter-Italic-VariableFont_opsz_wght-3WBQ6O2W.831252f8ba7e1b5b2432.ttf",
     "static/media/Inter-VariableFont_opsz_wght-ZQT46P7R.ttf": "/live-map-example/static/media/Inter-VariableFont_opsz_wght-ZQT46P7R.e05c5f3d1fa6a3893d84.ttf",
+    "static/media/tip-logo.svg": "/live-map-example/static/media/tip-logo.cd21bee5868826cad80028d318dd1893.svg",
+    "static/media/ol-logo.svg": "/live-map-example/static/media/ol-logo.1ab2b8cc44a9db32161fbe870dfcad2b.svg",
     "index.html": "/live-map-example/index.html",
+    "static/media/info.svg": "/live-map-example/static/media/info.3098cd5221a139f0bc5e088c01ba25ba.svg",
     "main.917d8bca.css.map": "/live-map-example/static/css/main.917d8bca.css.map",
-    "main.21ce7713.js.map": "/live-map-example/static/js/main.21ce7713.js.map"
+    "main.91272f9b.js.map": "/live-map-example/static/js/main.91272f9b.js.map"
   },
   "entrypoints": [
     "static/css/main.917d8bca.css",
-    "static/js/main.21ce7713.js"
+    "static/js/main.91272f9b.js"
   ]
 }
