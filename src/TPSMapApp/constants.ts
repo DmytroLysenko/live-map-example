@@ -8,16 +8,37 @@ import {
   WatermarkColors,
 } from "./types";
 
-export const WATERMARKS: IWatermark[] = Object.entries(WatermarkColors).map(
-  ([key, value], idx) => {
-    return {
-      id: idx + 1,
-      sortOrder: idx + 1,
-      watermarkName: key,
-      color: value,
-    };
-  }
-);
+const WATERMARK_1: IWatermark = {
+  id: 1,
+  sortOrder: 1,
+  watermarkName: "BlueViolet",
+  color: WatermarkColors.BlueViolet,
+};
+const WATERMARK_2: IWatermark = {
+  id: 2,
+  sortOrder: 2,
+  watermarkName: "SkyBlue",
+  color: WatermarkColors.SkyBlue,
+};
+const WATERMARK_3: IWatermark = {
+  id: 3,
+  sortOrder: 3,
+  watermarkName: "Chartreuse",
+  color: WatermarkColors.Chartreuse,
+};
+const WATERMARK_4: IWatermark = {
+  id: 4,
+  sortOrder: 4,
+  watermarkName: "DarkOrange",
+  color: WatermarkColors.DarkOrange,
+};
+
+export const WATERMARKS: IWatermark[] = [
+  WATERMARK_1,
+  WATERMARK_2,
+  WATERMARK_3,
+  WATERMARK_4,
+];
 
 export const WATERMARKS_MAP_BY_STRING_ID = WATERMARKS.reduce((result, item) => {
   result.set(`${item.id}`, item);
@@ -30,17 +51,7 @@ export const DEFAULT_TICKETS: ITicket[] = [
     section: "1",
     row: "E",
     price: 80,
-    watermarks: WATERMARKS.length ? [WATERMARKS[0]] : undefined,
-  },
-  {
-    id: 2,
-    section: "1",
-    row: "F",
-    price: 100,
-    watermarks:
-      WATERMARKS.length > 3
-        ? [WATERMARKS[2], WATERMARKS[WATERMARKS.length - 1]]
-        : undefined,
+    watermarks: [WATERMARK_1],
   },
   { id: 3, section: "10", row: "E", price: 100 },
   {
@@ -48,36 +59,41 @@ export const DEFAULT_TICKETS: ITicket[] = [
     section: "11",
     row: "D",
     price: 120,
-    watermarks:
-      WATERMARKS.length > 2
-        ? [WATERMARKS[0], WATERMARKS[WATERMARKS.length - 1]]
-        : undefined,
   },
   {
     id: 5,
     section: "15",
     row: "R",
     price: 160,
-    watermarks: WATERMARKS.length > 2 ? [WATERMARKS[1]] : undefined,
+    watermarks: [WATERMARK_2],
   },
   {
     id: 6,
     section: "16",
     row: "R",
     price: 160,
-    watermarks: WATERMARKS.length > 2 ? [WATERMARKS[1]] : undefined,
+    watermarks: [WATERMARK_2],
   },
   {
     id: 7,
     section: "5",
     row: "R",
     price: 140,
+    watermarks: [WATERMARK_4],
   },
   {
     id: 8,
     section: "6",
     row: "R",
     price: 180,
+    watermarks: [WATERMARK_4],
+  },
+  {
+    id: 9,
+    section: "20",
+    row: "R",
+    price: 160,
+    watermarks: [WATERMARK_3],
   },
 ];
 
@@ -85,7 +101,7 @@ export const DEFAULT_ACTION_STATE: IActionState = {
   hover: undefined,
   focus: undefined,
   selected: [],
-  selectedWatermark: undefined,
+  selectedWatermarks: [],
 };
 
 export const DEFAULT_FLY_TO_STATE: IFlyToState = {
@@ -124,3 +140,6 @@ export const DEFAULT_ITEM_STYLES_STATE: IMapProps["defaultItemStyles"] = {
 export const sections: any = [];
 
 export const DEFAULT_COLOR = "#BFE5BB";
+export const HEADER_HEIGHT = 50;
+export const FOOTER_HEIGHT = 120;
+export const SIDEBAR_WIDTH = 400;

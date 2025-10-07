@@ -1,22 +1,27 @@
 import React, { useMemo } from "react";
-import StyledTooltipContainer from "../StyledTooltipContainer";
-import { ITicket, IWatermark } from "../../types";
+
+import StyledContainer from "./StyledContainer";
+import { Flex, Typography } from "antd";
+
 import { getStringPrice } from "../../utils";
 
+import { ITicket, IWatermark } from "../../types";
+
 interface IProps {
-  color: string;
   sectionName: string;
   tickets?: ITicket[];
 }
 
-const SectionTooltip = ({ color, sectionName, tickets }: IProps) => {
-  const { minPrice, maxPrice } = useMemo(() => {
+const SectionTooltip = ({ sectionName, tickets }: IProps) => {
+  const { minPrice, maxPrice, watermarks } = useMemo(() => {
     const result: {
       minPrice?: number;
       maxPrice?: number;
+      watermarks: IWatermark[];
     } = {
       minPrice: undefined,
       maxPrice: undefined,
+      watermarks: [],
     };
     if (!tickets?.length) return result;
     tickets.forEach((ticket) => {
@@ -27,26 +32,57 @@ const SectionTooltip = ({ color, sectionName, tickets }: IProps) => {
       if (typeof maxPrice === "undefined" || ticket.price > maxPrice) {
         result.maxPrice = ticket.price;
       }
+      if (ticket.watermarks) {
+        ticket.watermarks.forEach((w) => {
+          if (!result.watermarks.some((item) => item.id === w.id)) {
+            result.watermarks.push(w);
+          }
+        });
+      }
     });
     return result;
   }, [tickets]);
   return (
-    <StyledTooltipContainer>
-      <div className="color" style={{ backgroundColor: color }} />
-      <div>
-        <div>
-          Section:
-          <strong> {sectionName}</strong>
+    <StyledContainer>
+      <div className="body">
+        <div className="row">
+          <div className="column">
+            Sec: <strong>{sectionName}</strong>
+          </div>
         </div>
-        <div>
-          Price Range:
-          <strong>
-            {" "}
-            {`${typeof minPrice !== "undefined" ? getStringPrice(minPrice) : "*"} - ${typeof maxPrice !== "undefined" ? getStringPrice(maxPrice) : "*"}`}
-          </strong>
+        <div className="row">
+          <div className="column divider">
+            Qty: <strong>{tickets?.length}</strong>
+          </div>
+          <div className="column">
+            from:{" "}
+            <strong>
+              {`${typeof minPrice !== "undefined" ? getStringPrice(minPrice) : "*"}`}
+            </strong>
+          </div>
         </div>
+        {!!watermarks.length && (
+          <div className="row">
+            <div>
+              <strong>Hospitality Options:</strong>
+              {watermarks.map((w) => (
+                <Flex key={w.id} align="center" gap={4}>
+                  <div
+                    style={{
+                      width: "8px",
+                      height: "8px",
+                      borderRadius: "50%",
+                      backgroundColor: w.color,
+                    }}
+                  />
+                  {w.watermarkName}
+                </Flex>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-    </StyledTooltipContainer>
+    </StyledContainer>
   );
 };
 

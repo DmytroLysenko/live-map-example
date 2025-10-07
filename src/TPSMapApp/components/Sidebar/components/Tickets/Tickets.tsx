@@ -24,7 +24,11 @@ const Tickets = ({
   onDeleteTicket,
 }: IProps) => {
   return (
-    <Section style={{ flex: "auto", display: "flex", flexDirection: "column" }}>
+    <Section
+      name="Tickets"
+      style={{ flex: "auto", display: "flex", flexDirection: "column" }}
+      defaultOpen={false}
+    >
       <Label label="Tickets" />
       <StyledContainer>
         {tickets.map((ticket) => {

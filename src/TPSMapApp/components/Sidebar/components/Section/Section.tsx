@@ -4,10 +4,16 @@ import Label from "../Label";
 interface IProps {
   children: React.ReactNode;
   style?: React.CSSProperties;
+  defaultOpen?: boolean;
   name?: string;
 }
-const Section = ({ children, style = {}, name }: IProps) => {
-  const [collapsed, setCollapsed] = useState(true);
+const Section = ({
+  children,
+  style = {},
+  name,
+  defaultOpen = true,
+}: IProps) => {
+  const [collapsed, setCollapsed] = useState(defaultOpen);
   return (
     <div
       style={{

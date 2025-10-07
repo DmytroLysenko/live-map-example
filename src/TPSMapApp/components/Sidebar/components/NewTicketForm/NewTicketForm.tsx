@@ -105,7 +105,7 @@ const NewTicketForm = ({ onAddTicket }: IProps) => {
                 </option>
               ))}
             </select>
-            Watermarks
+            Hospitality Options
           </label>
         </div>
         <div>

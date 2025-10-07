@@ -16,9 +16,11 @@ import {
   IFlyToState,
   IActionState,
   IMapSizeState,
+  IWheelchairsState,
 } from "../../types";
 import type { IMapItemIdentifies, IMapProps } from "@onlocation/tps-map";
 import MapSize from "./components/MapSize";
+import Section from "./components/Section";
 
 interface IProps {
   tickets: ITicket[];
@@ -32,8 +34,8 @@ interface IProps {
   layoutId: string;
   onLayoutIdChange: (id: string) => void;
   onAddTicket: (newTicket: NewTicket) => void;
-  wheelchairs: boolean;
-  setWheelchairs: (value: boolean) => void;
+  wheelchairs: IWheelchairsState;
+  setWheelchairs: (update: Partial<IWheelchairsState>) => void;
   defaultItemStyles: IMapProps["defaultItemStyles"];
   onActiveStylesChange: (
     update: Partial<Required<IMapProps>["defaultItemStyles"]>
@@ -68,14 +70,27 @@ const Sidebar = ({
   return (
     <div
       style={{
-        width: "300px",
         height: "100%",
         overflowY: "auto",
         fontSize: "12px",
         display: "flex",
         flexDirection: "column",
+        position: "relative",
       }}
     >
+      <Section
+        style={{
+          backgroundColor: "#c5c5c5",
+          fontSize: "14px",
+          fontWeight: "bold",
+          textAlign: "center",
+          position: "sticky",
+          top: 0,
+          left: 0,
+        }}
+      >
+        This Side Pane is not part of the Widget.
+      </Section>
       <TokenFilter onTokenChange={setToken} />
       <LayoutFilter layoutId={layoutId} onChange={onLayoutIdChange} />
       <NewTicketForm onAddTicket={onAddTicket} />

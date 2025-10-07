@@ -49,7 +49,7 @@ const TicketItem = ({
         </div>
         {watermarks && watermarks.length > 0 && (
           <div>
-            Watermarks:
+            Hospitality Options:
             {watermarks
               .sort((a, b) => a.sortOrder - b.sortOrder)
               .map((watermark) => (

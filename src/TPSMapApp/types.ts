@@ -14,7 +14,7 @@ export interface IActionState {
   hover: ItemAction | undefined;
   focus: ItemAction | undefined;
   selected: ItemAction[];
-  selectedWatermark: IWatermark | undefined;
+  selectedWatermarks: IWatermark[];
 }
 
 export type ItemAction = IMapItemIdentifies & { id?: number };
@@ -48,7 +48,12 @@ export interface IMapSizeState {
 
 export enum WatermarkColors {
   BlueViolet = "#8A2BE2",
-  BurlyWood = "#DEB887",
+  SkyBlue = "#87CEEB",
   Chartreuse = "#7FFF00",
   DarkOrange = "#FF8C00",
+}
+
+export interface IWheelchairsState {
+  show: boolean;
+  basedOnRows: boolean;
 }
