@@ -1,10 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
+import Label from "../Label";
 
 interface IProps {
   children: React.ReactNode;
   style?: React.CSSProperties;
+  defaultOpen?: boolean;
+  name?: string;
 }
-const Section = ({ children, style = {} }: IProps) => {
+const Section = ({
+  children,
+  style = {},
+  name,
+  defaultOpen = true,
+}: IProps) => {
+  const [collapsed, setCollapsed] = useState(defaultOpen);
   return (
     <div
       style={{
@@ -14,7 +23,36 @@ const Section = ({ children, style = {} }: IProps) => {
         ...style,
       }}
     >
-      {children}
+      {!name && children}
+      {name && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: collapsed ? "center" : "flex-start",
+          }}
+        >
+          {!collapsed ? (
+            <div style={{ flex: "auto" }}>{children}</div>
+          ) : (
+            <Label label={name} />
+          )}
+          <div
+            style={{
+              width: "20px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-start",
+              cursor: "pointer",
+            }}
+            onClick={() => setCollapsed((prev) => !prev)}
+          >
+            <i className="material-icons">
+              {collapsed ? "keyboard_arrow_down" : "keyboard_arrow_up"}
+            </i>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

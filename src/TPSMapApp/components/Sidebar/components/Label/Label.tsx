@@ -6,7 +6,14 @@ interface IProps {
 
 const Label = ({ label }: IProps) => {
   return (
-    <div style={{ fontSize: "14px", margin: "0 0 5px 0", fontWeight: "bold" }}>
+    <div
+      style={{
+        fontSize: "14px",
+        fontWeight: "bold",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
       {label}
     </div>
   );

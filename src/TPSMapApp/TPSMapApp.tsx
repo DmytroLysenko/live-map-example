@@ -1,99 +1,129 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import TPSMap from "@onlocation/tps-map";
 
-import StyledMapWrapper from "./StyledMapWrapper";
 import RowTooltip from "./components/RowTooltip";
 import SectionTooltip from "./components/SectionTooltip";
 import Sidebar from "./components/Sidebar";
-import Watermarks from "./components/Watermarks";
 
-import { DEFAULT_COLOR } from "./constants";
-import { getTicketState } from "./components/Watermarks/utils";
+import {
+  DEFAULT_ACTION_STATE,
+  DEFAULT_FLY_TO_STATE,
+  DEFAULT_ITEM_STYLES_STATE,
+  DEFAULT_MAP_SIZE_STATE,
+  DEFAULT_TICKETS,
+  FOOTER_HEIGHT,
+  HEADER_HEIGHT,
+  SIDEBAR_WIDTH,
+} from "./constants";
 
-import { ITicket, IWatermark } from "./types/ticket";
-import type { IMapItem, IMapItemIdentifies } from "@onlocation/tps-map";
-
-type ItemAction = IMapItemIdentifies & { id?: number };
-
-export interface IOLActionState {
-  hover: ItemAction | undefined;
-  focus: ItemAction | undefined;
-  selected: ItemAction[];
-  selectedWatermark: IWatermark | undefined;
-}
+import type { IMapItem } from "@onlocation/tps-map";
+import { ItemAction, ITicket, IWatermark, IWheelchairsState } from "./types";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import { getCurrentWatermark, isTicketSelected } from "./utils";
+import { Flex } from "antd";
+import { OLLogoIcon } from "./components/Icons";
 
 const TPSMapApp = () => {
-  const [tickets, setTickets] = useState<ITicket[]>([]);
-  const [ticketState, setTicketState] = useState(getTicketState(tickets));
-  const [actionState, setActionState] = useState<IOLActionState>({
-    hover: undefined,
-    focus: undefined,
-    selected: [],
-    selectedWatermark: undefined,
-  });
-  const [level, setLevel] = useState<"row" | "section">("section");
   const [token, setToken] = useState<string | null>(null);
-  const [layoutId, setLayoutId] = useState<string>("18851");
+  const [tickets, setTickets] = useState<ITicket[]>(DEFAULT_TICKETS);
+
+  // settings
+  const [layoutId, setLayoutId] = useState<string>("1339713");
+  const [wheelchairs, setWheelchairs] = useState<IWheelchairsState>({
+    show: true,
+    basedOnRows: false,
+  });
   const [labelingByData, setLabelingByData] = useState(true);
-
-  const selectedTicketIds = useMemo(() => {
-    if (actionState.selectedWatermark) {
-      return (
-        ticketState
-          .ticketsByWatermarkIdMap!.get(actionState.selectedWatermark.id)
-          ?.map((item) => item.id) || []
-      );
-    }
-    return tickets
-      .filter((ticket) => {
-        return actionState.selected.some((item) => {
-          if (item.rowName) {
-            return (
-              ticket.row === item.rowName && ticket.section === item.sectionName
-            );
-          } else {
-            return ticket.section === item.sectionName;
-          }
-        });
-      })
-      .map((ticket) => ticket.id);
-  }, [actionState.selected, actionState.selectedWatermark]);
-
-  const mapItems = useMemo(
-    () =>
-      tickets.map((ticket, idx) => {
-        const selectedWatermark =
-          actionState.selectedWatermark && ticket.watermarks?.length
-            ? ticket.watermarks.find(
-                (item) => item.id === actionState.selectedWatermark?.id
-              )
-            : undefined;
-
-        const watermark =
-          selectedWatermark ||
-          (ticket.watermarks?.length
-            ? ticket.watermarks.sort(
-                (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
-              )[0]
-            : undefined);
-        const color = watermark?.color || DEFAULT_COLOR;
-        return {
-          sectionName: ticket.section,
-          rowName: ticket.row,
-          inactiveStyles: {
-            fillColor: selectedWatermark?.color,
-          },
-          // fillPattern: "hatched",
-          sortOrder: selectedWatermark?.sortOrder || undefined,
-          rowTooltip: <RowTooltip color={color} name={ticket.row} />,
-          sectionTooltip: (
-            <SectionTooltip color={color} name={ticket.section} />
-          ),
-        } as IMapItem;
-      }),
-    [tickets, actionState.selectedWatermark]
+  const [level, setLevel] = useState<"row" | "section">("section");
+  const [defaultItemStyles, setDefaultItemStyles] = useState(
+    DEFAULT_ITEM_STYLES_STATE
   );
+  const [mapSize, setMapSize] = useState(DEFAULT_MAP_SIZE_STATE);
+  const [flyToState, setFlyToState] = useState(DEFAULT_FLY_TO_STATE);
+  const [actionState, setActionState] = useState(DEFAULT_ACTION_STATE);
+
+  const watermarks = useMemo(() => {
+    const watermarksMap = tickets.reduce((result, item) => {
+      if (item.watermarks?.length) {
+        item.watermarks.forEach((w) => {
+          result.set(w.id, w);
+        });
+      }
+      return result;
+    }, new Map<IWatermark["id"], IWatermark>());
+    return Array.from(watermarksMap.values()).sort(
+      (a, b) => a.sortOrder - b.sortOrder
+    );
+  }, [tickets]);
+
+  const filteredTickets = useMemo(() => {
+    const { selectedWatermarks } = actionState;
+    const selectedWatermarkIds = selectedWatermarks.map((item) => item.id);
+    return tickets.filter((item) => {
+      if (
+        selectedWatermarkIds.length &&
+        (!item.watermarks ||
+          !item.watermarks.some((w) => selectedWatermarkIds.includes(w.id)))
+      ) {
+        return false;
+      }
+      if (
+        actionState.selected.length &&
+        !isTicketSelected(actionState.selected, item)
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [tickets, actionState.selectedWatermarks, actionState.selected]);
+
+  const mapItems = useMemo(() => {
+    const ticketsMapBySectionName = tickets.reduce((result, ticket) => {
+      const tickets = [...(result.get(ticket.section) || [])];
+      tickets.push(ticket);
+      result.set(ticket.section, tickets);
+      return result;
+    }, new Map<ITicket["section"], ITicket[]>());
+
+    return tickets.map((ticket) => {
+      const { selectedWatermarks } = actionState;
+      const watermark = getCurrentWatermark(
+        ticket.watermarks,
+        selectedWatermarks
+      );
+      if (ticket.section === "1") {
+        console.log(watermark);
+        console.log(ticket);
+      }
+      return {
+        sectionName: ticket.section,
+        rowName: ticket.row,
+        inactiveStyles: watermark
+          ? {
+              fillColor: watermark.color,
+            }
+          : undefined,
+        activeStyles: watermark
+          ? {
+              fillColor: watermark.color,
+            }
+          : undefined,
+        rowTooltip: <RowTooltip ticket={ticket} />,
+        sectionTooltip: (
+          <SectionTooltip
+            sectionName={ticket.section}
+            tickets={ticketsMapBySectionName.get(ticket.section)}
+          />
+        ),
+      } as IMapItem;
+    });
+  }, [
+    tickets,
+    actionState.selectedWatermarks,
+    defaultItemStyles?.interactive?.inactive?.fillColor,
+  ]);
 
   const handleHover = (item: ItemAction | undefined) => {
     if (!actionState?.focus) {
@@ -107,7 +137,11 @@ const TPSMapApp = () => {
       focus:
         JSON.stringify(item) === JSON.stringify(prev.focus) ? undefined : item,
       hover: undefined,
+      selectedWatermarks: [],
     }));
+  };
+  const handleDeleteTicket = (id: ITicket["id"]) => {
+    setTickets((prev) => prev.filter((item) => item.id !== id));
   };
 
   const handleSelect = (items: ItemAction[]) => {
@@ -119,121 +153,170 @@ const TPSMapApp = () => {
     }));
   };
 
-  const handleSelectWatermark = (watermark: IWatermark) => {
-    setActionState((prev) => ({
-      ...prev,
-      selected:
-        prev.selectedWatermark?.id === watermark.id
-          ? ([] as ItemAction[])
-          : ticketState.ticketsByWatermarkIdMap
-              .get(watermark.id)
-              ?.map((item) => ({
-                ...item,
-                sectionName: item.section,
-                rowName: item.row,
-              })) || ([] as ItemAction[]),
-      selectedWatermark:
-        prev.selectedWatermark?.id === watermark.id ? undefined : watermark,
-    }));
+  const handleSelectWatermark = (watermarks: IWatermark[]) => {
+    setActionState((prev) => ({ ...prev, selectedWatermarks: watermarks }));
   };
 
-  useEffect(() => {
-    setTicketState(getTicketState(tickets));
-  }, [tickets]);
-
-  useEffect(() => {
-    setTickets([]);
-  }, [layoutId]);
+  const useFlyOn = useMemo(() => {
+    const result = [];
+    if (flyToState.hover.value) {
+      result.push({ type: "hover", fitToCenter: flyToState.hover.fitToCenter });
+    }
+    if (flyToState.focus.value) {
+      result.push({ type: "focus", fitToCenter: flyToState.focus.fitToCenter });
+    }
+    if (flyToState.select.value) {
+      result.push({
+        type: "select",
+        fitToCenter: flyToState.select.fitToCenter,
+      });
+    }
+    return result;
+  }, [flyToState]);
 
   return (
     <div
       style={{
-        display: "flex",
         height: "100%",
-        overflow: "hidden",
+        fontFamily: "Inter, san-serif",
+        color: "#020202",
       }}
     >
-      <Sidebar
-        tickets={tickets}
-        selectedTickets={selectedTicketIds}
-        actionState={actionState}
-        onHover={handleHover}
-        onClick={handleClick}
-        setToken={(token) => setToken(token)}
-        setLabelingByData={(value) => setLabelingByData(value)}
-        labelingByData={labelingByData}
-        layoutId={layoutId}
-        onLayoutIdChange={(id) => setLayoutId(id)}
-        onAddTicket={(newTicket) =>
-          setTickets((prev) => [{ ...newTicket, id: prev.length + 1 }, ...prev])
-        }
-      />
-      <StyledMapWrapper style={{ flex: "auto", height: "100%" }}>
-        {token ? (
-          <TPSMap
-            level={level}
-            onLevelChange={setLevel}
-            venueLayoutId={
-              isNaN(Number(layoutId)) ? undefined : Number(layoutId)
-            }
-            token={token}
-            items={mapItems}
-            hoveredItem={actionState.hover || undefined}
-            focusedItem={actionState.focus || undefined}
-            selectedItems={actionState.selected || undefined}
+      <div style={{ height: `${HEADER_HEIGHT}px` }}>
+        <Header />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          height: `calc(100% - ${HEADER_HEIGHT}px)`,
+          overflow: "hidden",
+        }}
+      >
+        <div style={{ width: SIDEBAR_WIDTH, height: "100%" }}>
+          <Sidebar
+            tickets={filteredTickets}
+            actionState={actionState}
+            onHover={handleHover}
+            onClick={handleClick}
+            onDeleteTicket={handleDeleteTicket}
+            setToken={(token) => setToken(token)}
+            setLabelingByData={(value) => setLabelingByData(value)}
             labelingByData={labelingByData}
-            // mapOptions={{ dragging: false }}
-            defaultExtraContentOptions={{
-              levelWrapperClassName: "level-wrapper",
-            }}
-            extraContent={{
-              "bottom-left": {
-                component: (
-                  <Watermarks
-                    tickets={tickets}
-                    onSelect={handleSelectWatermark}
-                  />
-                ),
-              },
-            }}
-            useShadeDown={["select"]}
-            useMapSelect
-            onItemHover={(item) => {
-              handleHover(item);
-            }}
-            onItemClick={(item) => {
-              handleClick(item);
-            }}
-            onItemsSelect={(item, items) => {
-              console.log("map selection: ", item, items);
-              handleSelect(items);
-            }}
-            // onMapHome={() => {
-            //   console.log("map reset view")
-            // }}
-            // onZoomChange={(zoom) => console.log("zoom change: ", zoom)}
-            defaultItemStyles={{
-              interactive: {
-                inactive: {
-                  fillColor: "#CABF93",
-                  fillOpacity: 1,
-                },
-                active: {
-                  fillColor: "#CABF93",
-                  fillOpacity: 1,
-                  color: "black",
-                  opacity: 1,
-                  weight: 2,
-                },
-              },
-              noninteractive: {
-                fillColor: "#80808080",
-                // fillColor: "white",
-              },
+            layoutId={layoutId}
+            onLayoutIdChange={(id) => setLayoutId(id)}
+            onAddTicket={(newTicket) =>
+              setTickets((prev) => [
+                { ...newTicket, id: prev.length + 1 },
+                ...prev,
+              ])
+            }
+            wheelchairs={wheelchairs}
+            setWheelchairs={(update) =>
+              setWheelchairs((prev) => ({ ...prev, ...update }))
+            }
+            defaultItemStyles={defaultItemStyles}
+            onActiveStylesChange={(update) =>
+              setDefaultItemStyles((prev) =>
+                !prev ? update : { ...prev, ...update }
+              )
+            }
+            mapSize={mapSize}
+            onSizeChange={(update) =>
+              setMapSize((prev) => ({ ...prev, ...update }))
+            }
+            flyToOptions={flyToState}
+            onFlyToChange={(update) => {
+              setActionState(DEFAULT_ACTION_STATE);
+              setFlyToState((prev) => ({ ...prev, ...update }));
             }}
           />
-        ) : null}
-      </StyledMapWrapper>
+        </div>
+        <div
+          style={{
+            flex: "auto",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div style={{ flex: "auto", width: "100%" }}>
+            {token ? (
+              <TPSMap
+                onLevelChange={setLevel}
+                venueLayoutId={
+                  isNaN(Number(layoutId)) ? undefined : Number(layoutId)
+                }
+                extraContent={{
+                  "bottom-left": {
+                    component: (
+                      <Footer
+                        watermarks={watermarks}
+                        selectedWatermarks={actionState.selectedWatermarks}
+                        onWatermarkChange={(selectedWatermarks) =>
+                          setActionState((prev) => ({
+                            ...prev,
+                            selectedWatermarks,
+                          }))
+                        }
+                      />
+                    ),
+                  },
+                  "bottom-right": {
+                    component: (
+                      <Flex
+                        align="center"
+                        style={{
+                          fontSize: "12px",
+                          margin: "22px",
+                          fontWeight: "bold",
+                        }}
+                        gap={10}
+                      >
+                        Only with
+                        <OLLogoIcon />
+                      </Flex>
+                    ),
+                  },
+                }}
+                token={token}
+                wheelchairs={wheelchairs.show}
+                wheelchairsByRows={wheelchairs.basedOnRows}
+                items={mapItems}
+                width={mapSize?.width ? `${mapSize.width}px` : undefined}
+                height={mapSize?.height ? `${mapSize.height}px` : undefined}
+                // containerStyles={{ border: "1px solid lightgray", borderRadius: 8 }}
+                hoveredItem={actionState.hover || undefined}
+                focusedItem={actionState.focus || undefined}
+                selectedItems={actionState.selected || undefined}
+                labelingByData={labelingByData}
+                useFlyOn={useFlyOn as any}
+                useShadeDown={["select"]}
+                onItemHover={(item) => {
+                  handleHover(item);
+                }}
+                // onItemClick={(item) => {
+                //   handleClick(item);
+                // }}
+                onItemsSelect={(item, items) => {
+                  console.log("map selection: ", item, items);
+                  handleSelect(items);
+                }}
+                onMapHome={() => {
+                  setActionState(DEFAULT_ACTION_STATE);
+                }}
+                defaultItemStyles={defaultItemStyles}
+              />
+            ) : null}
+          </div>
+          {/* <div style={{ height: `${FOOTER_HEIGHT}px` }}>
+            <Footer
+              selectedWatermarks={actionState.selectedWatermarks}
+              onWatermarkChange={(selectedWatermarks) =>
+                setActionState((prev) => ({ ...prev, selectedWatermarks }))
+              }
+            />
+          </div> */}
+        </div>
+      </div>
     </div>
   );
 };

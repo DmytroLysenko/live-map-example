@@ -1,97 +1,145 @@
-import { ITicket, IWatermark } from "./types/ticket";
+import { IMapProps } from "@onlocation/tps-map";
+import {
+  IFlyToState,
+  IActionState,
+  IMapSizeState,
+  ITicket,
+  IWatermark,
+  WatermarkColors,
+} from "./types";
 
-const greenWatermark: IWatermark = {
+const WATERMARK_1: IWatermark = {
   id: 1,
-  watermarkName: "Green",
-  color: "lightgreen",
   sortOrder: 1,
+  watermarkName: "BlueViolet",
+  color: WatermarkColors.BlueViolet,
 };
-const redWatermark: IWatermark = {
+const WATERMARK_2: IWatermark = {
   id: 2,
-  watermarkName: "Red",
-  color: "red",
   sortOrder: 2,
+  watermarkName: "SkyBlue",
+  color: WatermarkColors.SkyBlue,
 };
-const blueWatermark: IWatermark = {
+const WATERMARK_3: IWatermark = {
   id: 3,
-  watermarkName: "Blue",
-  color: "lightblue",
   sortOrder: 3,
+  watermarkName: "Chartreuse",
+  color: WatermarkColors.Chartreuse,
+};
+const WATERMARK_4: IWatermark = {
+  id: 4,
+  sortOrder: 4,
+  watermarkName: "DarkOrange",
+  color: WatermarkColors.DarkOrange,
 };
 
-export const TICKETS: ITicket[] = [
+export const WATERMARKS: IWatermark[] = [
+  WATERMARK_1,
+  WATERMARK_2,
+  WATERMARK_3,
+  WATERMARK_4,
+];
+
+export const WATERMARKS_MAP_BY_STRING_ID = WATERMARKS.reduce((result, item) => {
+  result.set(`${item.id}`, item);
+  return result;
+}, new Map<string, IWatermark>());
+
+export const DEFAULT_TICKETS: ITicket[] = [
   {
     id: 1,
     section: "1",
-    row: "1",
-    // sectionId: 8154001,
-    // rowId: 96676901,
-    watermarks: [greenWatermark],
+    row: "E",
+    price: 80,
+    watermarks: [WATERMARK_1],
   },
-  {
-    id: 2,
-    section: "1",
-    row: "2",
-    // sectionId: 8154001,
-    // rowId: 96676951,
-    watermarks: [redWatermark],
-  },
-  {
-    id: 3,
-    section: "2",
-    row: "1",
-    // sectionId: 8154051,
-    // rowId: 96677851
-  },
+  { id: 3, section: "10", row: "E", price: 100 },
   {
     id: 4,
-    section: "3",
-    row: "1",
-    // sectionId: 8154101,
-    // rowId: 96678851
+    section: "11",
+    row: "D",
+    price: 120,
   },
   {
     id: 5,
-    section: "7",
-    row: "1",
-    // sectionId: 8154201,
-    // rowId: 96680001,
-    watermarks: [blueWatermark],
+    section: "15",
+    row: "R",
+    price: 160,
+    watermarks: [WATERMARK_2],
   },
   {
     id: 6,
-    section: "7",
-    row: "2",
-    // sectionId: 8154201,
-    // rowId: 96680051,
-    watermarks: [blueWatermark],
+    section: "16",
+    row: "R",
+    price: 160,
+    watermarks: [WATERMARK_2],
   },
   {
     id: 7,
-    section: "7",
-    row: "3",
-    // sectionId: 8154201,
-    // rowId: 96680101,
-    watermarks: [blueWatermark],
+    section: "5",
+    row: "R",
+    price: 140,
+    watermarks: [WATERMARK_4],
   },
   {
     id: 8,
-    section: "7",
-    row: "4",
-    // sectionId: 8154201,
-    // rowId: 96680151,
-    watermarks: [blueWatermark],
+    section: "6",
+    row: "R",
+    price: 180,
+    watermarks: [WATERMARK_4],
   },
   {
     id: 9,
-    section: "8",
-    row: "1",
-    // sectionId: 8154251,
-    // rowId: 96680951,
-    watermarks: [redWatermark, blueWatermark],
+    section: "20",
+    row: "R",
+    price: 160,
+    watermarks: [WATERMARK_3],
   },
 ];
 
+export const DEFAULT_ACTION_STATE: IActionState = {
+  hover: undefined,
+  focus: undefined,
+  selected: [],
+  selectedWatermarks: [],
+};
+
+export const DEFAULT_FLY_TO_STATE: IFlyToState = {
+  hover: { value: false, fitToCenter: false },
+  focus: { value: true, fitToCenter: false },
+  select: { value: false, fitToCenter: true },
+};
+
+export const DEFAULT_MAP_SIZE_STATE: IMapSizeState = {};
+export const DEFAULT_ITEM_STYLES_STATE: IMapProps["defaultItemStyles"] = {
+  interactive: {
+    active: {
+      fillColor: "#FEC787",
+      fillOpacity: 1,
+      color: "black",
+      opacity: 1,
+      weight: 2,
+    },
+    inactive: {
+      fillColor: "#BFE5BB",
+      fillOpacity: 1,
+      color: "#C9C9C9",
+      opacity: 1,
+      weight: 1,
+    },
+  },
+  noninteractive: {
+    fillColor: "#E7E7E7",
+    fillOpacity: 1,
+    color: "#C9C9C9",
+    opacity: 1,
+    weight: 1,
+  },
+};
+
 export const sections: any = [];
 
-export const DEFAULT_COLOR = "#CABF93";
+export const DEFAULT_COLOR = "#BFE5BB";
+export const HEADER_HEIGHT = 50;
+export const FOOTER_HEIGHT = 120;
+export const SIDEBAR_WIDTH = 400;

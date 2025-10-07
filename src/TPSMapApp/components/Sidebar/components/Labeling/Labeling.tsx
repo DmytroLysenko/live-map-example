@@ -9,13 +9,13 @@ interface IProps {
 
 const Labeling = ({ onLabelingChange, value }: IProps) => {
   return (
-    <Section>
-      <Label label="Labeling by data" />
+    <Section style={{ display: "flex", gap: 10, alignItems: "center" }}>
       <input
         type="checkbox"
         checked={value}
         onChange={({ target: { checked } }) => onLabelingChange(checked)}
       />
+      <Label label="Labeling by data" />
     </Section>
   );
 };

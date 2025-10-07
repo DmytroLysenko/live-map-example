@@ -1,67 +1,65 @@
 import React from "react";
 
 import TicketItem from "../TicketItem";
-
-import { IOLActionState } from "../../../../TPSMapApp";
-import { ITicket } from "../../../../types/ticket";
-import type { IMapItemIdentifies } from "@onlocation/tps-map";
 import Section from "../Section";
 import Label from "../Label";
 
+import { ITicket, IActionState } from "../../../../types";
+import type { IMapItemIdentifies } from "@onlocation/tps-map";
+import StyledContainer from "./StyledContainer";
+
 interface IProps {
   tickets: ITicket[];
-  selectedTickets: ITicket["id"][];
-  actionState: IOLActionState;
+  actionState: IActionState;
   onHover: (id: IMapItemIdentifies | undefined) => void;
   onClick: (id: IMapItemIdentifies) => void;
+  onDeleteTicket: (ticketId: ITicket["id"]) => void;
 }
 
 const Tickets = ({
   tickets,
-  selectedTickets,
   actionState,
   onHover,
   onClick,
+  onDeleteTicket,
 }: IProps) => {
   return (
-    <Section style={{ flex: "auto" }}>
+    <Section
+      name="Tickets"
+      style={{ flex: "auto", display: "flex", flexDirection: "column" }}
+      defaultOpen={false}
+    >
       <Label label="Tickets" />
-      <div style={{ maxHeight: "400px", overflow: "auto" }}>
-        {tickets
-          .filter((ticket) => {
-            if (selectedTickets.length) {
-              return selectedTickets.includes(ticket.id);
+      <StyledContainer>
+        {tickets.map((ticket) => {
+          let active = false;
+          const currentFocus = actionState.focus || actionState.hover;
+          if (currentFocus) {
+            if (
+              !currentFocus.rowName &&
+              ticket.section === currentFocus.sectionName
+            ) {
+              active = true;
+            } else if (
+              currentFocus.rowName === ticket.row &&
+              currentFocus.sectionName === ticket.section
+            ) {
+              active = true;
             }
-            return true;
-          })
-          .map((ticket) => {
-            let active = false;
-            const currentFocus = actionState.focus || actionState.hover;
-            if (currentFocus) {
-              if (
-                !currentFocus.rowName &&
-                ticket.section === currentFocus.sectionName
-              ) {
-                active = true;
-              } else if (
-                currentFocus.rowName === ticket.row &&
-                currentFocus.sectionName === ticket.section
-              ) {
-                active = true;
-              }
-            }
+          }
 
-            return (
-              <TicketItem
-                active={active}
-                key={ticket.id}
-                ticket={ticket}
-                onClick={onClick}
-                onHover={onHover}
-              />
-            );
-          })}
-      </div>
+          return (
+            <TicketItem
+              active={active}
+              key={ticket.id}
+              ticket={ticket}
+              onClick={onClick}
+              onHover={onHover}
+              onDeleteTicket={onDeleteTicket}
+            />
+          );
+        })}
+      </StyledContainer>
     </Section>
   );
 };
