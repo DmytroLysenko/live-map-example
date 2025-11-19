@@ -271,6 +271,9 @@ const MapApp = () => {
               ),
             },
           }}
+          defaultExtraContentOptions={{
+            zoom: { wrapperStyle: { marginLeft: "22px" } },
+          }}
           token={token}
           wheelchairs={wheelchairs.show}
           wheelchairsByRows={wheelchairs.basedOnRows}
@@ -288,9 +291,6 @@ const MapApp = () => {
           onItemHover={(item) => {
             handleHover(item);
           }}
-          // onItemClick={(item) => {
-          //   handleClick(item);
-          // }}
           onItemsSelect={(item, items) => {
             handleSelect(items);
           }}
