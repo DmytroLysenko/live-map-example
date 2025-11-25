@@ -26,7 +26,7 @@ const WatermarkItem = ({ watermark, onDelete, onUpdate, onAdd }: IProps) => {
   return (
     <StyledContainer>
       <ColorPicker
-        defaultValue={""}
+        defaultValue={"#000000"}
         format="hex"
         value={data.color}
         onChange={(value) =>
