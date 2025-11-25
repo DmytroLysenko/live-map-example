@@ -178,17 +178,17 @@ const MapApp = () => {
     setTickets((prev) =>
       prev.map((ticket) => {
         if (ticket.watermarks?.length) {
-          ticket.watermarks = ticket.watermarks.reduce((result, watermark) => {
+          const newWatermarks = ticket.watermarks.reduce((result, watermark) => {
             const targetWatermark = watermarks.find(
               (w) => w.id === watermark.id
             );
             if (targetWatermark) result.push(targetWatermark);
             return result;
           }, [] as IWatermark[]);
+          return { ...ticket, watermarks: newWatermarks };
         }
         return ticket;
       })
-    );
   }, [watermarks]);
 
   return (
