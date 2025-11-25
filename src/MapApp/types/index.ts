@@ -59,3 +59,6 @@ export interface IWheelchairsState {
   show: boolean;
   basedOnRows: boolean;
 }
+
+export type WatermarkUpdate = Partial<IWatermark> & Pick<IWatermark, "id">;
+export type NewWatermark = Omit<IWatermark, "id">;

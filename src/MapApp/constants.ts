@@ -42,11 +42,6 @@ export const WATERMARKS: IWatermark[] = [
   WATERMARK_4,
 ];
 
-export const WATERMARKS_MAP_BY_STRING_ID = WATERMARKS.reduce((result, item) => {
-  result.set(`${item.id}`, item);
-  return result;
-}, new Map<string, IWatermark>());
-
 export const DEFAULT_TICKETS: ITicket[] = [
   {
     id: 1,

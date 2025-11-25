@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom/client";
 import { Provider } from "jotai";
 import "./styles.css";
+import "./appStyles.css";
 import "@onlocation/tps-map/dist/index.css";
 
 import MapApp from "./MapApp";

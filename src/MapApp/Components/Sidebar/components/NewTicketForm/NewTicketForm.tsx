@@ -2,12 +2,12 @@ import React, { useState } from "react";
 
 import Label from "../Label";
 import Section from "../Section";
+import { Button, Flex, Input, InputNumber, Select, Typography } from "antd";
 
 import { IWatermark, NewTicket } from "../../../../types";
-import StyledContainer from "./StyledContainer";
-import { WATERMARKS, WATERMARKS_MAP_BY_STRING_ID } from "../../../../constants";
 
 interface IProps {
+  watermarks: IWatermark[];
   onAddTicket: (ticket: NewTicket) => void;
 }
 const DEFAULT_TICKET: NewTicket = {
@@ -17,7 +17,7 @@ const DEFAULT_TICKET: NewTicket = {
   price: 0,
 };
 
-const NewTicketForm = ({ onAddTicket }: IProps) => {
+const NewTicketForm = ({ onAddTicket, watermarks }: IProps) => {
   const [ticket, setTicket] = useState<NewTicket>(DEFAULT_TICKET);
 
   const handleAdd = () => {
@@ -26,23 +26,6 @@ const NewTicketForm = ({ onAddTicket }: IProps) => {
       setTicket(DEFAULT_TICKET);
     }
   };
-  const handleChange = (
-    event: Event | React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const target = event.target as HTMLSelectElement;
-    const selectedOptions: string[] = Array.from(target.options)
-      .filter((option) => option.selected)
-      .map((option) => option.value);
-
-    const watermarks = selectedOptions.reduce((result, stringId) => {
-      const watermark = WATERMARKS_MAP_BY_STRING_ID.get(stringId);
-      if (watermark) {
-        result.push(watermark);
-      }
-      return result;
-    }, [] as IWatermark[]);
-    setTicket((prev) => ({ ...prev, watermarks }));
-  };
 
   return (
     <Section
@@ -50,73 +33,81 @@ const NewTicketForm = ({ onAddTicket }: IProps) => {
       name="New Ticket Form"
     >
       <Label label="New Ticket Form" />
-      <StyledContainer>
-        <div>
-          <label>
-            <input
-              value={ticket.section}
-              onChange={({ target: { value } }) =>
-                setTicket((prev) => ({ ...prev, section: value }))
-              }
-            />
-            Section
-          </label>
-        </div>
-        <div>
-          <label>
-            <input
-              value={ticket.row}
-              onChange={({ target: { value } }) =>
-                setTicket((prev) => ({ ...prev, row: value }))
-              }
-            />
-            Row
-          </label>
-        </div>
-        <div>
-          <label>
-            <input
-              type="number"
-              min={0}
-              value={ticket.price}
-              onChange={({ target: { value } }) =>
-                setTicket((prev) => ({ ...prev, price: +value }))
-              }
-            />
-            Price
-          </label>
-        </div>
-        <div>
-          <label>
-            <select
-              id="watermarks_newTicketForm"
-              multiple
-              style={{ width: "55%" }}
-              onChange={handleChange}
-            >
-              {WATERMARKS.map((item) => (
-                <option
-                  key={item.id}
-                  selected={ticket.watermarks.some((w) => w.id === item.id)}
-                  title={`${item.watermarkName} (Sort Order: ${item.sortOrder})`}
-                  value={item.id}
-                >
-                  {item.watermarkName}
-                </option>
-              ))}
-            </select>
-            Hospitality Options
-          </label>
-        </div>
-        <div>
-          <button
-            disabled={!ticket.section || !ticket.row || !ticket.price}
-            onClick={handleAdd}
-          >
-            Add
-          </button>
-        </div>
-      </StyledContainer>
+      <Flex vertical gap={6} style={{ marginTop: "10px" }}>
+        <Input
+          style={{ width: "150px" }}
+          size="small"
+          prefix="Section:"
+          placeholder="Section"
+          value={ticket.section}
+          onChange={({ target: { value } }) =>
+            setTicket((prev) => ({ ...prev, section: value }))
+          }
+        />
+        <Input
+          style={{ width: "150px" }}
+          size="small"
+          prefix="Row:"
+          placeholder="Row"
+          value={ticket.row}
+          onChange={({ target: { value } }) =>
+            setTicket((prev) => ({ ...prev, row: value }))
+          }
+        />
+        <InputNumber
+          style={{ width: "150px" }}
+          size="small"
+          placeholder="Price"
+          prefix="Price $:"
+          controls={false}
+          value={ticket.price || null}
+          onChange={(value) =>
+            setTicket((prev) => ({ ...prev, price: value || 0 }))
+          }
+        />
+        <Select
+          placeholder="Packages"
+          value={ticket.watermarks.map((w) => w.id)}
+          options={watermarks}
+          fieldNames={{ label: "watermarkName", value: "id" }}
+          mode="multiple"
+          size="small"
+          optionRender={({ data }) => {
+            return (
+              <Flex align="center" gap={6}>
+                <div
+                  style={{
+                    height: "10px",
+                    width: "10px",
+                    borderRadius: "50%",
+                    backgroundColor: data.color,
+                  }}
+                />
+                <Typography.Text>{data.watermarkName}</Typography.Text>
+              </Flex>
+            );
+          }}
+          onChange={(watermarkIds) => {
+            const selectedWatermarks = watermarks.reduce(
+              (result, watermark) => {
+                if (watermarkIds.includes(watermark.id)) {
+                  result.push(watermark);
+                }
+                return result;
+              },
+              [] as IWatermark[]
+            );
+            setTicket((prev) => ({ ...prev, watermarks: selectedWatermarks }));
+          }}
+        />
+        <Button
+          size="small"
+          disabled={!ticket.section || !ticket.row || !ticket.price}
+          onClick={handleAdd}
+        >
+          Add
+        </Button>
+      </Flex>
     </Section>
   );
 };

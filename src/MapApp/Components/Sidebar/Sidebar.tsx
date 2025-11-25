@@ -3,12 +3,14 @@ import React from "react";
 import Tickets from "./components/Tickets";
 import LayoutFilter from "./components/LayoutFilter/LayoutFilter";
 import TokenFilter from "./components/TokenFilter";
-import Status from "./components/Status";
 import NewTicketForm from "./components/NewTicketForm";
 import Labeling from "./components/Labeling";
 import Wheelchairs from "./components/Wheelchairs";
 import DefaultItemStyles from "./components/DefaultItemStyles";
 import FlyToOptions from "./components/FlyToOptions";
+import MapSize from "./components/MapSize";
+import Section from "./components/Section";
+import Watermarks from "./components/Watermarks";
 
 import {
   NewTicket,
@@ -17,10 +19,11 @@ import {
   IActionState,
   IMapSizeState,
   IWheelchairsState,
+  IWatermark,
+  WatermarkUpdate,
+  NewWatermark,
 } from "../../types";
 import type { IMapItemIdentifies, IMapProps } from "@onlocation/tps-map";
-import MapSize from "./components/MapSize";
-import Section from "./components/Section";
 
 interface IProps {
   tickets: ITicket[];
@@ -44,6 +47,10 @@ interface IProps {
   onSizeChange: (update: Partial<IMapSizeState>) => void;
   flyToOptions: IFlyToState;
   onFlyToChange: (update: Partial<IFlyToState>) => void;
+  watermarks: IWatermark[];
+  onWatermarkUpdate: (update: WatermarkUpdate) => void;
+  onWatermarkDelete: (watermarkId: IWatermark["id"]) => void;
+  onWatermarkAdd: (watermark: NewWatermark) => void;
 }
 
 const Sidebar = ({
@@ -66,6 +73,10 @@ const Sidebar = ({
   onSizeChange,
   flyToOptions,
   onFlyToChange,
+  watermarks,
+  onWatermarkUpdate,
+  onWatermarkDelete,
+  onWatermarkAdd,
 }: IProps) => {
   return (
     <div
@@ -93,7 +104,7 @@ const Sidebar = ({
       </Section>
       <TokenFilter onTokenChange={setToken} />
       <LayoutFilter layoutId={layoutId} onChange={onLayoutIdChange} />
-      <NewTicketForm onAddTicket={onAddTicket} />
+      <NewTicketForm onAddTicket={onAddTicket} watermarks={watermarks} />
       <Tickets
         tickets={tickets}
         actionState={actionState}
@@ -101,7 +112,12 @@ const Sidebar = ({
         onClick={onClick}
         onDeleteTicket={onDeleteTicket}
       />
-      {/* <Status actionState={actionState} /> */}
+      <Watermarks
+        watermarks={watermarks}
+        onWatermarkUpdate={onWatermarkUpdate}
+        onWatermarkDelete={onWatermarkDelete}
+        onWatermarkAdd={onWatermarkAdd}
+      />
       <MapSize mapSize={mapSize} onSizeChange={onSizeChange} />
       <DefaultItemStyles
         styles={defaultItemStyles}

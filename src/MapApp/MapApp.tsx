@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import TPSMap from "@onlocation/tps-map";
 import { Flex } from "antd";
@@ -14,6 +14,7 @@ import {
   DEFAULT_ITEM_STYLES_STATE,
   DEFAULT_MAP_SIZE_STATE,
   DEFAULT_TICKETS,
+  WATERMARKS,
 } from "./constants";
 
 import { getCurrentWatermark, isTicketSelected } from "./utils";
@@ -26,8 +27,8 @@ const MapApp = () => {
     "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJxY3VlLWF1dGhlbnRpY2F0aW9uIiwiYXVkIjoicWN1ZS1hdXRoZW50aWNhdGlvbiIsIm5iZiI6MTc0NzExMjQ5OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDg3IiwiYXV0aGVudGljYXRpb25JZCI6LTIsImV4cCI6NDg3MTI1MDc0NiwidXNlck5hbWUiOiJvbGUtbWFwLWNvbXBvbmVudCIsImlhdCI6MTc0NzExMjQ5OCwianRpIjoiOThjNWViOGMtZGExMS00YzM4LWE4MmMtYzE4MGUyMzgzNDU5In0.lwKhyOGTe7RUd6v9cYH97hLrco3jJJyLIrLrEfNiHmHrtfoDUU6mqhoIqDmG73rp368AWEDNkhlXQbqebsZnpaCgXfvsXDPeCQ1NtyBoWYJEap67zLBoTHRsTsgOVRfTGjOpLsx9pjG3hJ7WdnGfbVNyzcnDCyuDVesbK1CP058hZ_4poJ1GE-4JL-U0VGY-2qd5U3yYuwmsMJU8l2Yzcx9kuF8YZodpbAB9AvvwtWK-rap5N58Bze6AIFLp3rzvvW9YW20qYoiJBkE3YEB698W3HmhlJMM3ScKd9Lcoeoxb5b9c5eIDl5wdOOLJ7CDwsVme8Pf1DMgAAir7wMoDZA"
   );
   const [tickets, setTickets] = useState<ITicket[]>(DEFAULT_TICKETS);
+  const [watermarks, setWatermarks] = useState<IWatermark[]>(WATERMARKS);
 
-  // settings
   const [layoutId, setLayoutId] = useState<string>("1339713");
   const [wheelchairs, setWheelchairs] = useState<IWheelchairsState>({
     show: true,
@@ -41,20 +42,6 @@ const MapApp = () => {
   const [mapSize, setMapSize] = useState(DEFAULT_MAP_SIZE_STATE);
   const [flyToState, setFlyToState] = useState(DEFAULT_FLY_TO_STATE);
   const [actionState, setActionState] = useState(DEFAULT_ACTION_STATE);
-
-  const watermarks = useMemo(() => {
-    const watermarksMap = tickets.reduce((result, item) => {
-      if (item.watermarks?.length) {
-        item.watermarks.forEach((w) => {
-          result.set(w.id, w);
-        });
-      }
-      return result;
-    }, new Map<IWatermark["id"], IWatermark>());
-    return Array.from(watermarksMap.values()).sort(
-      (a, b) => a.sortOrder - b.sortOrder
-    );
-  }, [tickets]);
 
   const filteredTickets = useMemo(() => {
     const { selectedWatermarks } = actionState;
@@ -158,10 +145,6 @@ const MapApp = () => {
     }));
   };
 
-  const handleSelectWatermark = (watermarks: IWatermark[]) => {
-    setActionState((prev) => ({ ...prev, selectedWatermarks: watermarks }));
-  };
-
   const useFlyOn = useMemo(() => {
     const result: Required<IMapProps>["useFlyOn"] = [];
     if (flyToState.hover.value) {
@@ -191,6 +174,23 @@ const MapApp = () => {
     return result.length ? result : undefined;
   }, [flyToState]);
 
+  useEffect(() => {
+    setTickets((prev) =>
+      prev.map((ticket) => {
+        if (ticket.watermarks?.length) {
+          ticket.watermarks = ticket.watermarks.reduce((result, watermark) => {
+            const targetWatermark = watermarks.find(
+              (w) => w.id === watermark.id
+            );
+            if (targetWatermark) result.push(targetWatermark);
+            return result;
+          }, [] as IWatermark[]);
+        }
+        return ticket;
+      })
+    );
+  }, [watermarks]);
+
   return (
     <Layout
       sidebar={
@@ -205,12 +205,16 @@ const MapApp = () => {
           labelingByData={labelingByData}
           layoutId={layoutId}
           onLayoutIdChange={(id) => setLayoutId(id)}
-          onAddTicket={(newTicket) =>
+          onAddTicket={(newTicket) => {
+            const biggestTicketId = tickets.reduce(
+              (result, ticket) => (result > ticket.id ? result : ticket.id),
+              0
+            );
             setTickets((prev) => [
-              { ...newTicket, id: prev.length + 1 },
+              { ...newTicket, id: biggestTicketId + 1 },
               ...prev,
-            ])
-          }
+            ]);
+          }}
           wheelchairs={wheelchairs}
           setWheelchairs={(update) =>
             setWheelchairs((prev) => ({ ...prev, ...update }))
@@ -229,6 +233,26 @@ const MapApp = () => {
           onFlyToChange={(update) => {
             setActionState(DEFAULT_ACTION_STATE);
             setFlyToState((prev) => ({ ...prev, ...update }));
+          }}
+          watermarks={watermarks}
+          onWatermarkUpdate={(update) =>
+            setWatermarks((prev) =>
+              prev.map((w) => (w.id === update.id ? { ...w, ...update } : w))
+            )
+          }
+          onWatermarkDelete={(id) => {
+            setWatermarks((prev) => prev.filter((w) => w.id !== id));
+          }}
+          onWatermarkAdd={(newWatermark) => {
+            const biggestId = watermarks.reduce(
+              (id, w) => (w.id > id ? w.id : id),
+              0
+            );
+            setWatermarks((prev) =>
+              [...prev, { id: biggestId + 1, ...newWatermark }].sort(
+                (a, b) => a.sortOrder - b.sortOrder
+              )
+            );
           }}
         />
       }
