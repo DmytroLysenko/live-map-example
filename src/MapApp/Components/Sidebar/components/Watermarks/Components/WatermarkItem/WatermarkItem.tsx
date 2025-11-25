@@ -38,7 +38,6 @@ const WatermarkItem = ({ watermark, onDelete, onUpdate, onAdd }: IProps) => {
           popupOverlayInner: { zIndex: 2500 },
         }}
         onOpenChange={(open) => {
-          console.log(open);
           if (
             !open &&
             "id" in watermark &&
