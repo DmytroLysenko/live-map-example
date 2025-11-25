@@ -34,7 +34,7 @@ const WatermarkItem = ({ watermark, onDelete, onUpdate, onAdd }: IProps) => {
         }
         style={{ width: "15%" }}
         styles={{
-          popup: { border: '1px solid red', zIndex: `2500 !important` },
+          popup: { zIndex: 2500 },
           popupOverlayInner: { zIndex: 2500 },
         }}
         onOpenChange={(open) => {
