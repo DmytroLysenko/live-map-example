@@ -26,9 +26,6 @@ const StyledRightSidebar = styled(Layout.Sider)`
   overflow: hidden;
   background-color: white;
   color: inherit;
-  @media only screen and (min-width: ${VIEWPORT_BREAK_POINT}px) {
-    display: none;
-  }
 `;
 
 export { StyledLayout, StyledLeftSidebar, StyledRightSidebar };

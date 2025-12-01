@@ -1,7 +1,6 @@
 import styled from "styled-components";
-import { VIEWPORT_BREAK_POINT } from "../../constants";
 
-const StyledSidebar = styled.div`
+const StyledContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -12,4 +11,4 @@ const StyledSidebar = styled.div`
   font-size: 12px;
 `;
 
-export default StyledSidebar;
+export default StyledContainer;

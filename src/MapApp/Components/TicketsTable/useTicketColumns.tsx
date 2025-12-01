@@ -1,5 +1,5 @@
-import { getCurrentWatermark, getStringPrice } from "../../../../utils";
-import { ITicket } from "../../../../types";
+import { getCurrentWatermark, getStringPrice } from "../../utils";
+import { ITicket } from "../../types";
 import { Flex, type TableColumnsType } from "antd";
 
 export const useTicketColumns = ({
@@ -62,7 +62,7 @@ export const useTicketColumns = ({
         <Flex align="center" justify="center">
           <i
             className="material-icons"
-            style={{ cursor: "pointer", fontSize: "20px" }}
+            style={{ cursor: "pointer", fontSize: "20px", color: "gray" }}
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();

@@ -8,6 +8,13 @@ const StyledContainer = styled.div`
   justify-content: center;
   display: flex;
   align-items: center;
+  min-width: 140px;
+
+  font-size: 14px;
+
+  @media only screen and (min-width: ${VIEWPORT_BREAK_POINT}px) {
+    font-size: 20px;
+  }
 
   & svg {
     height: 20px;

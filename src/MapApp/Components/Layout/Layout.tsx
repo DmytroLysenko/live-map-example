@@ -10,10 +10,11 @@ import Header from "../Header";
 
 interface IProps {
   children?: React.ReactNode;
-  sidebar?: React.ReactNode;
+  leftSidebar?: React.ReactNode;
+  rightSidebar?: React.ReactNode;
 }
 
-const AppLayout = ({ children, sidebar }: IProps) => {
+const AppLayout = ({ children, leftSidebar, rightSidebar }: IProps) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <StyledLayout style={{ height: "100vh", overflow: "hidden" }}>
@@ -24,24 +25,26 @@ const AppLayout = ({ children, sidebar }: IProps) => {
         />
       </StyledLayout.Header>
       <Layout>
-        {sidebar && (
-          <StyledLeftSidebar width={"300px"} theme="light">
-            {sidebar}
+        {leftSidebar && (
+          <StyledLeftSidebar width={"350px"} theme="light">
+            {leftSidebar}
           </StyledLeftSidebar>
         )}
         <Layout.Content style={{ height: "100%", overflow: "hidden" }}>
           {children}
         </Layout.Content>
-        <StyledRightSidebar
-          collapsible
-          collapsedWidth={0}
-          width={"300px"}
-          hidden={collapsed}
-          collapsed={collapsed}
-          theme="light"
-        >
-          {sidebar}
-        </StyledRightSidebar>
+        {rightSidebar && (
+          <StyledRightSidebar
+            collapsible
+            collapsedWidth={0}
+            width={"300px"}
+            hidden={collapsed}
+            collapsed={collapsed}
+            theme="light"
+          >
+            {rightSidebar}
+          </StyledRightSidebar>
+        )}
       </Layout>
     </StyledLayout>
   );

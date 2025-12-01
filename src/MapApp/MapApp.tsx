@@ -6,9 +6,10 @@ import { OLLogoIcon } from "./Components/Icons";
 import Layout from "./Components/Layout";
 import { RowTooltip, SectionTooltip } from "./Components/MapTooltip";
 import Footer from "./Components/Footer";
-import Sidebar from "./Components/Sidebar";
 import StyledContent from "./StyledContent";
-import TicketsMobile from "./Components/Sidebar/components/TicketsMobile";
+import TicketsTable from "./Components/TicketsTable";
+import MapSettings from "./Components/MapSettings";
+import Sidebar from "./Components/Sidebar";
 
 import {
   DEFAULT_ACTION_STATE,
@@ -23,6 +24,7 @@ import { getCurrentWatermark, isTicketSelected } from "./utils";
 
 import type { IMapItem, IMapProps } from "@onlocation/tps-map";
 import { ItemAction, ITicket, IWatermark, IWheelchairsState } from "./types";
+import WheelchairsToggle from "./Components/WheelchairsToggle";
 
 const MapApp = () => {
   const [token, setToken] = useState<string | null>(
@@ -199,13 +201,17 @@ const MapApp = () => {
 
   return (
     <Layout
-      sidebar={
+      leftSidebar={
         <Sidebar
           tickets={filteredTickets}
           actionState={actionState}
           onHover={handleHover}
           onClick={handleClick}
           onDeleteTicket={handleDeleteTicket}
+        />
+      }
+      rightSidebar={
+        <MapSettings
           setToken={(token) => setToken(token)}
           setLabelingByData={(value) => setLabelingByData(value)}
           labelingByData={labelingByData}
@@ -293,16 +299,27 @@ const MapApp = () => {
                     <Flex
                       align="center"
                       style={{
-                        fontSize: "12px",
+                        fontSize: "14px",
                         margin: "22px",
                         fontWeight: "bold",
                       }}
-                      gap={10}
+                      gap={6}
                     >
-                      Only with
-                      <OLLogoIcon />
+                      Only on
+                      <OLLogoIcon style={{ width: 16, height: 16 }} />
                     </Flex>
                   ),
+                },
+                "top-right": {
+                  component: (
+                    <WheelchairsToggle
+                      wheelchairs={wheelchairs}
+                      setWheelchairs={(update) =>
+                        setWheelchairs((prev) => ({ ...prev, ...update }))
+                      }
+                    />
+                  ),
+                  wrapperStyles: { margin: "22px 22px 0 0" },
                 },
               }}
               defaultExtraContentOptions={{
@@ -336,12 +353,13 @@ const MapApp = () => {
           ) : null}
         </div>
         <div className="content-container">
-          <TicketsMobile
+          <TicketsTable
             tickets={filteredTickets}
             actionState={actionState}
             onHover={handleHover}
             onClick={handleClick}
             onDeleteTicket={handleDeleteTicket}
+            detailed={false}
           />
         </div>
       </StyledContent>

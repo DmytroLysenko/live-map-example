@@ -7,17 +7,19 @@ const StyledContainer = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
-  & > div.central {
-    flex: auto;
-    text-align: center;
-    color: white;
-    font-size: 14px;
-    line-height: 1;
-    font-weight: bold;
-    @media only screen and (min-width: ${VIEWPORT_BREAK_POINT}px) {
-      font-size: 18px;
-    }
-  }
+  justify-content: space-between;
+
+  // & > div.central {
+  //   flex: auto;
+  //   text-align: center;
+  //   color: white;
+  //   font-size: 14px;
+  //   line-height: 1;
+  //   font-weight: bold;
+  //   @media only screen and (min-width: ${VIEWPORT_BREAK_POINT}px) {
+  //     font-size: 18px;
+  //   }
+  // }
 `;
 
 export default StyledContainer;
