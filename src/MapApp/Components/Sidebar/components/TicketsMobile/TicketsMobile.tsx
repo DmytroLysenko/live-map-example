@@ -31,7 +31,7 @@ const TicketsMobile = ({
         columns={columns}
         dataSource={tickets}
         pagination={false}
-        scroll={{ y: 55 * 5 }}
+        scroll={{ y: 38 * 8 }}
         showSorterTooltip={false}
         onRow={(ticket) => {
           return {

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { VIEWPORT_BRAKE_POINT } from "../../constants";
+import { VIEWPORT_BREAK_POINT } from "../../constants";
 
 const StyledContainer = styled.div`
   background-color: black;
@@ -14,7 +14,7 @@ const StyledContainer = styled.div`
     font-size: 14px;
     line-height: 1;
     font-weight: bold;
-    @media only screen and (min-width: ${VIEWPORT_BRAKE_POINT}px) {
+    @media only screen and (min-width: ${VIEWPORT_BREAK_POINT}px) {
       font-size: 18px;
     }
   }

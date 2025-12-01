@@ -1,4 +1,4 @@
-export const VIEWPORT_BRAKE_POINT = 900;
+export const VIEWPORT_BREAK_POINT = 900;
 
 import { IMapProps } from "@onlocation/tps-map";
 import {

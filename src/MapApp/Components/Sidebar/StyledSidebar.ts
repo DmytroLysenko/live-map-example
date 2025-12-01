@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { VIEWPORT_BRAKE_POINT } from "../../constants";
+import { VIEWPORT_BREAK_POINT } from "../../constants";
 
 const StyledSidebar = styled.div`
   height: 100%;
@@ -12,7 +12,7 @@ const StyledSidebar = styled.div`
   font-size: 12px;
 
   .tickets-section {
-    @media only screen and (max-width: ${VIEWPORT_BRAKE_POINT}px) {
+    @media only screen and (max-width: ${VIEWPORT_BREAK_POINT}px) {
       display: none !important;
     }
   }
