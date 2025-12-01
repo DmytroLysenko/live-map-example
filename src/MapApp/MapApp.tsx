@@ -7,6 +7,8 @@ import Layout from "./Components/Layout";
 import { RowTooltip, SectionTooltip } from "./Components/MapTooltip";
 import Footer from "./Components/Footer";
 import Sidebar from "./Components/Sidebar";
+import StyledContent from "./StyledContent";
+import TicketsMobile from "./Components/Sidebar/components/TicketsMobile";
 
 import {
   DEFAULT_ACTION_STATE,
@@ -178,17 +180,21 @@ const MapApp = () => {
     setTickets((prev) =>
       prev.map((ticket) => {
         if (ticket.watermarks?.length) {
-          const newWatermarks = ticket.watermarks.reduce((result, watermark) => {
-            const targetWatermark = watermarks.find(
-              (w) => w.id === watermark.id
-            );
-            if (targetWatermark) result.push(targetWatermark);
-            return result;
-          }, [] as IWatermark[]);
+          const newWatermarks = ticket.watermarks.reduce(
+            (result, watermark) => {
+              const targetWatermark = watermarks.find(
+                (w) => w.id === watermark.id
+              );
+              if (targetWatermark) result.push(targetWatermark);
+              return result;
+            },
+            [] as IWatermark[]
+          );
           return { ...ticket, watermarks: newWatermarks };
         }
         return ticket;
       })
+    );
   }, [watermarks]);
 
   return (
@@ -257,73 +263,88 @@ const MapApp = () => {
         />
       }
     >
-      {token ? (
-        <TPSMap
-          onLevelChange={(level) => {
-            setLevel(level);
-          }}
-          venueLayoutId={isNaN(Number(layoutId)) ? undefined : Number(layoutId)}
-          extraContent={{
-            "bottom-left": {
-              component: (
-                <Footer
-                  watermarks={watermarks}
-                  selectedWatermarks={actionState.selectedWatermarks}
-                  onWatermarkChange={(selectedWatermarks) =>
-                    setActionState((prev) => ({
-                      ...prev,
-                      selectedWatermarks,
-                    }))
-                  }
-                />
-              ),
-            },
-            "bottom-right": {
-              component: (
-                <Flex
-                  align="center"
-                  style={{
-                    fontSize: "12px",
-                    margin: "22px",
-                    fontWeight: "bold",
-                  }}
-                  gap={10}
-                >
-                  Only with
-                  <OLLogoIcon />
-                </Flex>
-              ),
-            },
-          }}
-          defaultExtraContentOptions={{
-            zoom: { wrapperStyle: { marginLeft: "22px" } },
-          }}
-          token={token}
-          wheelchairs={wheelchairs.show}
-          wheelchairsByRows={wheelchairs.basedOnRows}
-          items={mapItems}
-          width={mapSize?.width ? `${mapSize.width}px` : undefined}
-          height={mapSize?.height ? `${mapSize.height}px` : undefined}
-          hoveredItem={actionState.hover || undefined}
-          focusedItem={actionState.focus || undefined}
-          selectedItems={actionState.selected || undefined}
-          labelingSettings={
-            !labelingByData ? { backgroundLabeling: true } : undefined
-          }
-          useFlyOn={useFlyOn}
-          useShadeDown={["select"]}
-          onItemHover={(item) => {
-            handleHover(item);
-          }}
-          onItemsSelect={(item, items) => {
-            handleSelect(items);
-          }}
-          onMapHome={() => {
-            setActionState(DEFAULT_ACTION_STATE);
-          }}
-          defaultItemStyles={defaultItemStyles}
-        />
-      ) : null}
+      <StyledContent>
+        <div className="map-container">
+          {token ? (
+            <TPSMap
+              onLevelChange={(level) => {
+                setLevel(level);
+              }}
+              venueLayoutId={
+                isNaN(Number(layoutId)) ? undefined : Number(layoutId)
+              }
+              extraContent={{
+                "bottom-left": {
+                  component: (
+                    <Footer
+                      watermarks={watermarks}
+                      selectedWatermarks={actionState.selectedWatermarks}
+                      onWatermarkChange={(selectedWatermarks) =>
+                        setActionState((prev) => ({
+                          ...prev,
+                          selectedWatermarks,
+                        }))
+                      }
+                    />
+                  ),
+                },
+                "bottom-right": {
+                  component: (
+                    <Flex
+                      align="center"
+                      style={{
+                        fontSize: "12px",
+                        margin: "22px",
+                        fontWeight: "bold",
+                      }}
+                      gap={10}
+                    >
+                      Only with
+                      <OLLogoIcon />
+                    </Flex>
+                  ),
+                },
+              }}
+              defaultExtraContentOptions={{
+                zoom: { wrapperStyle: { marginLeft: "22px" } },
+              }}
+              token={token}
+              wheelchairs={wheelchairs.show}
+              wheelchairsByRows={wheelchairs.basedOnRows}
+              items={mapItems}
+              width={mapSize?.width ? `${mapSize.width}px` : undefined}
+              height={mapSize?.height ? `${mapSize.height}px` : undefined}
+              hoveredItem={actionState.hover || undefined}
+              focusedItem={actionState.focus || undefined}
+              selectedItems={actionState.selected || undefined}
+              labelingSettings={
+                !labelingByData ? { backgroundLabeling: true } : undefined
+              }
+              useFlyOn={useFlyOn}
+              useShadeDown={["select"]}
+              onItemHover={(item) => {
+                handleHover(item);
+              }}
+              onItemsSelect={(item, items) => {
+                handleSelect(items);
+              }}
+              onMapHome={() => {
+                setActionState(DEFAULT_ACTION_STATE);
+              }}
+              defaultItemStyles={defaultItemStyles}
+            />
+          ) : null}
+        </div>
+        <div className="content-container">
+          <TicketsMobile
+            tickets={filteredTickets}
+            actionState={actionState}
+            onHover={handleHover}
+            onClick={handleClick}
+            onDeleteTicket={handleDeleteTicket}
+          />
+        </div>
+      </StyledContent>
     </Layout>
   );
 };

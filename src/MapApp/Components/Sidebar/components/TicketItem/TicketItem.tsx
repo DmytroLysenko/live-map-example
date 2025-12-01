@@ -47,6 +47,9 @@ const TicketItem = ({
         <div>
           Price: <strong>{getStringPrice(ticket.price)}</strong>
         </div>
+        <div>
+          Quantity: <strong>{ticket.quantity}</strong>
+        </div>
         {watermarks && watermarks.length > 0 && (
           <div>
             Hospitality Options:

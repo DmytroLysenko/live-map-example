@@ -29,6 +29,7 @@ export interface ITicket {
   section: string;
   row: string;
   watermarks?: IWatermark[];
+  quantity: number;
 }
 
 export interface IWatermark {
@@ -40,7 +41,7 @@ export interface IWatermark {
 
 export type NewTicket = Pick<
   Required<ITicket>,
-  "row" | "section" | "watermarks" | "price"
+  "row" | "section" | "watermarks" | "price" | "quantity"
 >;
 
 export interface IMapSizeState {

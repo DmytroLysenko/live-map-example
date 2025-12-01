@@ -15,13 +15,14 @@ const DEFAULT_TICKET: NewTicket = {
   row: "",
   watermarks: [],
   price: 0,
+  quantity: 0,
 };
 
 const NewTicketForm = ({ onAddTicket, watermarks }: IProps) => {
   const [ticket, setTicket] = useState<NewTicket>(DEFAULT_TICKET);
 
   const handleAdd = () => {
-    if (ticket.section && ticket.row && ticket.price) {
+    if (ticket.section && ticket.row && ticket.price && ticket.quantity) {
       onAddTicket(ticket);
       setTicket(DEFAULT_TICKET);
     }
@@ -63,6 +64,17 @@ const NewTicketForm = ({ onAddTicket, watermarks }: IProps) => {
           value={ticket.price || null}
           onChange={(value) =>
             setTicket((prev) => ({ ...prev, price: value || 0 }))
+          }
+        />
+        <InputNumber
+          style={{ width: "150px" }}
+          size="small"
+          placeholder="Quantity"
+          prefix="Quantity:"
+          controls={false}
+          value={ticket.quantity || null}
+          onChange={(value) =>
+            setTicket((prev) => ({ ...prev, quantity: value || 0 }))
           }
         />
         <Select

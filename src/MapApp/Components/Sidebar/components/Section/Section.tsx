@@ -6,12 +6,14 @@ interface IProps {
   style?: React.CSSProperties;
   defaultOpen?: boolean;
   name?: string;
+  className?: string;
 }
 const Section = ({
   children,
   style = {},
   name,
   defaultOpen = true,
+  className,
 }: IProps) => {
   const [collapsed, setCollapsed] = useState(defaultOpen);
   return (
@@ -21,6 +23,7 @@ const Section = ({
         borderBottom: "1px solid lightgray",
         ...style,
       }}
+      className={className}
     >
       {!name && children}
       {name && (

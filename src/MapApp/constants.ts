@@ -49,13 +49,15 @@ export const DEFAULT_TICKETS: ITicket[] = [
     row: "E",
     price: 80,
     watermarks: [WATERMARK_1],
+    quantity: 3,
   },
-  { id: 3, section: "10", row: "E", price: 100 },
+  { id: 3, section: "10", row: "E", price: 100, quantity: 3 },
   {
     id: 4,
     section: "11",
     row: "D",
     price: 120,
+    quantity: 3,
   },
   {
     id: 5,
@@ -63,6 +65,7 @@ export const DEFAULT_TICKETS: ITicket[] = [
     row: "R",
     price: 160,
     watermarks: [WATERMARK_2],
+    quantity: 3,
   },
   {
     id: 6,
@@ -70,6 +73,7 @@ export const DEFAULT_TICKETS: ITicket[] = [
     row: "R",
     price: 160,
     watermarks: [WATERMARK_2],
+    quantity: 3,
   },
   {
     id: 7,
@@ -77,6 +81,7 @@ export const DEFAULT_TICKETS: ITicket[] = [
     row: "R",
     price: 140,
     watermarks: [WATERMARK_4],
+    quantity: 3,
   },
   {
     id: 8,
@@ -84,6 +89,7 @@ export const DEFAULT_TICKETS: ITicket[] = [
     row: "R",
     price: 180,
     watermarks: [WATERMARK_4],
+    quantity: 3,
   },
   {
     id: 9,
@@ -91,6 +97,7 @@ export const DEFAULT_TICKETS: ITicket[] = [
     row: "R",
     price: 160,
     watermarks: [WATERMARK_3],
+    quantity: 3,
   },
 ];
 
