@@ -23,6 +23,9 @@ import {
   WatermarkUpdate,
   NewWatermark,
 } from "../../types";
+import Label from "./components/Label";
+import StyledSidebar from "./StyledSidebar";
+
 import type { IMapItemIdentifies, IMapProps } from "@onlocation/tps-map";
 
 interface IProps {
@@ -79,16 +82,7 @@ const Sidebar = ({
   onWatermarkAdd,
 }: IProps) => {
   return (
-    <div
-      style={{
-        height: "100%",
-        overflowY: "auto",
-        fontSize: "12px",
-        display: "flex",
-        flexDirection: "column",
-        position: "relative",
-      }}
-    >
+    <StyledSidebar>
       <Section
         style={{
           backgroundColor: "#c5c5c5",
@@ -105,13 +99,21 @@ const Sidebar = ({
       <TokenFilter onTokenChange={setToken} />
       <LayoutFilter layoutId={layoutId} onChange={onLayoutIdChange} />
       <NewTicketForm onAddTicket={onAddTicket} watermarks={watermarks} />
-      <Tickets
-        tickets={tickets}
-        actionState={actionState}
-        onHover={onHover}
-        onClick={onClick}
-        onDeleteTicket={onDeleteTicket}
-      />
+      <Section
+        name="Tickets"
+        style={{ flex: "auto", display: "flex", flexDirection: "column" }}
+        defaultOpen={false}
+        className="tickets-section"
+      >
+        <Label label="Tickets" />
+        <Tickets
+          tickets={tickets}
+          actionState={actionState}
+          onHover={onHover}
+          onClick={onClick}
+          onDeleteTicket={onDeleteTicket}
+        />
+      </Section>
       <Watermarks
         watermarks={watermarks}
         onWatermarkUpdate={onWatermarkUpdate}
@@ -126,7 +128,7 @@ const Sidebar = ({
       <FlyToOptions flyToOptions={flyToOptions} onChange={onFlyToChange} />
       <Wheelchairs setWheelchairs={setWheelchairs} value={wheelchairs} />
       <Labeling onLabelingChange={setLabelingByData} value={labelingByData} />
-    </div>
+    </StyledSidebar>
   );
 };
 
