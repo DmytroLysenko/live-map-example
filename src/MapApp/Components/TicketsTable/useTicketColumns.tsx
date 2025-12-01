@@ -53,7 +53,6 @@ export const useTicketColumns = ({
       dataIndex: "quantity",
       width: 35,
       sorter: (a, b) => a.quantity - b.quantity,
-      render: (quantity) => getStringPrice(quantity),
     },
     {
       width: 10,

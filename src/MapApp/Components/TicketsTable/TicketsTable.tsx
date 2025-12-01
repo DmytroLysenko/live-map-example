@@ -29,6 +29,7 @@ const TicketsTable = ({
   return (
     <TicketsMobileWrapper>
       <Table
+        rowKey="id"
         size="small"
         columns={columns}
         dataSource={tickets}

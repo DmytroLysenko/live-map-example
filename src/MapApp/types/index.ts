@@ -1,4 +1,4 @@
-import { IMapItemIdentifies } from "@onlocation/tps-map";
+import { IMapItemIdentifies, IMapProps } from "@onlocation/tps-map";
 
 interface IFlyToItemState {
   value: boolean;
@@ -63,3 +63,16 @@ export interface IWheelchairsState {
 
 export type WatermarkUpdate = Partial<IWatermark> & Pick<IWatermark, "id">;
 export type NewWatermark = Omit<IWatermark, "id">;
+
+export interface IMapSettings {
+  token: string | null;
+  tickets: ITicket[];
+  watermarks: IWatermark[];
+  layoutId: string;
+  wheelchairs: IWheelchairsState;
+  labelingByData: boolean;
+  level: "row" | "section";
+  defaultItemStyles: IMapProps["defaultItemStyles"];
+  mapSize: IMapSizeState;
+  flyToState: IFlyToState
+}

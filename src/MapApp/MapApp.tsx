@@ -11,41 +11,63 @@ import TicketsTable from "./Components/TicketsTable";
 import MapSettings from "./Components/MapSettings";
 import Sidebar from "./Components/Sidebar";
 
-import {
-  DEFAULT_ACTION_STATE,
-  DEFAULT_FLY_TO_STATE,
-  DEFAULT_ITEM_STYLES_STATE,
-  DEFAULT_MAP_SIZE_STATE,
-  DEFAULT_TICKETS,
-  WATERMARKS,
-} from "./constants";
+import { DEFAULT_ACTION_STATE, DEFAULT_MAP_SETTINGS } from "./constants";
 
 import { getCurrentWatermark, isTicketSelected } from "./utils";
 
 import type { IMapItem, IMapProps } from "@onlocation/tps-map";
-import { ItemAction, ITicket, IWatermark, IWheelchairsState } from "./types";
+import { IMapSettings, ItemAction, ITicket, IWatermark } from "./types";
 import WheelchairsToggle from "./Components/WheelchairsToggle";
 
-const MapApp = () => {
-  const [token, setToken] = useState<string | null>(
-    "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJxY3VlLWF1dGhlbnRpY2F0aW9uIiwiYXVkIjoicWN1ZS1hdXRoZW50aWNhdGlvbiIsIm5iZiI6MTc0NzExMjQ5OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDg3IiwiYXV0aGVudGljYXRpb25JZCI6LTIsImV4cCI6NDg3MTI1MDc0NiwidXNlck5hbWUiOiJvbGUtbWFwLWNvbXBvbmVudCIsImlhdCI6MTc0NzExMjQ5OCwianRpIjoiOThjNWViOGMtZGExMS00YzM4LWE4MmMtYzE4MGUyMzgzNDU5In0.lwKhyOGTe7RUd6v9cYH97hLrco3jJJyLIrLrEfNiHmHrtfoDUU6mqhoIqDmG73rp368AWEDNkhlXQbqebsZnpaCgXfvsXDPeCQ1NtyBoWYJEap67zLBoTHRsTsgOVRfTGjOpLsx9pjG3hJ7WdnGfbVNyzcnDCyuDVesbK1CP058hZ_4poJ1GE-4JL-U0VGY-2qd5U3yYuwmsMJU8l2Yzcx9kuF8YZodpbAB9AvvwtWK-rap5N58Bze6AIFLp3rzvvW9YW20qYoiJBkE3YEB698W3HmhlJMM3ScKd9Lcoeoxb5b9c5eIDl5wdOOLJ7CDwsVme8Pf1DMgAAir7wMoDZA"
-  );
-  const [tickets, setTickets] = useState<ITicket[]>(DEFAULT_TICKETS);
-  const [watermarks, setWatermarks] = useState<IWatermark[]>(WATERMARKS);
+const MAP_SETTINGS_STORAGE_KEY = "mapSettings";
 
-  const [layoutId, setLayoutId] = useState<string>("1339713");
-  const [wheelchairs, setWheelchairs] = useState<IWheelchairsState>({
-    show: true,
-    basedOnRows: false,
+const MapApp = () => {
+  const [mapSettings, setSettings] = useState<IMapSettings>(() => {
+    try {
+      const stored = sessionStorage.getItem(MAP_SETTINGS_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Merge with defaults to ensure any new keys get default values
+        return { ...DEFAULT_MAP_SETTINGS, ...parsed } as IMapSettings;
+      }
+    } catch (_) {
+      // swallow parsing errors and fall back to defaults
+    }
+    return DEFAULT_MAP_SETTINGS;
   });
-  const [labelingByData, setLabelingByData] = useState(true);
-  const [level, setLevel] = useState<"row" | "section">("section");
-  const [defaultItemStyles, setDefaultItemStyles] = useState(
-    DEFAULT_ITEM_STYLES_STATE
-  );
-  const [mapSize, setMapSize] = useState(DEFAULT_MAP_SIZE_STATE);
-  const [flyToState, setFlyToState] = useState(DEFAULT_FLY_TO_STATE);
   const [actionState, setActionState] = useState(DEFAULT_ACTION_STATE);
+
+  const {
+    token,
+    tickets,
+    watermarks,
+    layoutId,
+    wheelchairs,
+    labelingByData,
+    level,
+    defaultItemStyles,
+    mapSize,
+    flyToState,
+  } = mapSettings;
+
+  const handleUpdateSettings = (update: Partial<IMapSettings>) => {
+    setSettings((prev) => {
+      const next = { ...prev, ...update } as IMapSettings;
+      try {
+        sessionStorage.setItem(
+          MAP_SETTINGS_STORAGE_KEY,
+          JSON.stringify(next)
+        );
+      } catch (_) {
+        // Ignore write errors
+      }
+      return next;
+    });
+  };
+
+  const handleDeleteTicket = (id: ITicket["id"]) => {
+    handleUpdateSettings({ tickets: tickets.filter((item) => item.id !== id) });
+  };
 
   const filteredTickets = useMemo(() => {
     const { selectedWatermarks } = actionState;
@@ -137,9 +159,6 @@ const MapApp = () => {
       selectedWatermarks: [],
     }));
   };
-  const handleDeleteTicket = (id: ITicket["id"]) => {
-    setTickets((prev) => prev.filter((item) => item.id !== id));
-  };
 
   const handleSelect = (items: ItemAction[]) => {
     setActionState((prev) => ({
@@ -179,8 +198,8 @@ const MapApp = () => {
   }, [flyToState]);
 
   useEffect(() => {
-    setTickets((prev) =>
-      prev.map((ticket) => {
+    handleUpdateSettings({
+      tickets: tickets.map((ticket) => {
         if (ticket.watermarks?.length) {
           const newWatermarks = ticket.watermarks.reduce(
             (result, watermark) => {
@@ -195,8 +214,8 @@ const MapApp = () => {
           return { ...ticket, watermarks: newWatermarks };
         }
         return ticket;
-      })
-    );
+      }),
+    });
   }, [watermarks]);
 
   return (
@@ -212,59 +231,69 @@ const MapApp = () => {
       }
       rightSidebar={
         <MapSettings
-          setToken={(token) => setToken(token)}
-          setLabelingByData={(value) => setLabelingByData(value)}
+          setToken={(token) => handleUpdateSettings({ token })}
+          setLabelingByData={(value) => {
+            handleUpdateSettings({ labelingByData: value });
+          }}
           labelingByData={labelingByData}
           layoutId={layoutId}
-          onLayoutIdChange={(id) => setLayoutId(id)}
+          onLayoutIdChange={(id) => {
+            handleUpdateSettings({ layoutId: id });
+          }}
           onAddTicket={(newTicket) => {
             const biggestTicketId = tickets.reduce(
               (result, ticket) => (result > ticket.id ? result : ticket.id),
               0
             );
-            setTickets((prev) => [
-              { ...newTicket, id: biggestTicketId + 1 },
-              ...prev,
-            ]);
+            handleUpdateSettings({
+              tickets: [{ ...newTicket, id: biggestTicketId + 1 }, ...tickets],
+            });
           }}
           wheelchairs={wheelchairs}
-          setWheelchairs={(update) =>
-            setWheelchairs((prev) => ({ ...prev, ...update }))
-          }
+          setWheelchairs={(update) => {
+            handleUpdateSettings({
+              wheelchairs: { ...wheelchairs, ...update },
+            });
+          }}
           defaultItemStyles={defaultItemStyles}
-          onActiveStylesChange={(update) =>
-            setDefaultItemStyles((prev) =>
-              !prev ? update : { ...prev, ...update }
-            )
-          }
+          onActiveStylesChange={(update) => {
+            handleUpdateSettings({
+              defaultItemStyles: { ...defaultItemStyles, ...update },
+            });
+          }}
           mapSize={mapSize}
-          onSizeChange={(update) =>
-            setMapSize((prev) => ({ ...prev, ...update }))
-          }
+          onSizeChange={(update) => {
+            handleUpdateSettings({ mapSize: { ...mapSize, ...update } });
+          }}
           flyToOptions={flyToState}
           onFlyToChange={(update) => {
             setActionState(DEFAULT_ACTION_STATE);
-            setFlyToState((prev) => ({ ...prev, ...update }));
+            handleUpdateSettings({ flyToState: { ...flyToState, ...update } });
           }}
           watermarks={watermarks}
-          onWatermarkUpdate={(update) =>
-            setWatermarks((prev) =>
-              prev.map((w) => (w.id === update.id ? { ...w, ...update } : w))
-            )
-          }
+          onWatermarkUpdate={(update) => {
+            handleUpdateSettings({
+              watermarks: watermarks.map((w) =>
+                w.id === update.id ? { ...w, ...update } : w
+              ),
+            });
+          }}
           onWatermarkDelete={(id) => {
-            setWatermarks((prev) => prev.filter((w) => w.id !== id));
+            handleUpdateSettings({
+              watermarks: watermarks.filter((w) => w.id !== id),
+            });
           }}
           onWatermarkAdd={(newWatermark) => {
             const biggestId = watermarks.reduce(
               (id, w) => (w.id > id ? w.id : id),
               0
             );
-            setWatermarks((prev) =>
-              [...prev, { id: biggestId + 1, ...newWatermark }].sort(
-                (a, b) => a.sortOrder - b.sortOrder
-              )
-            );
+            handleUpdateSettings({
+              watermarks: [
+                ...watermarks,
+                { id: biggestId + 1, ...newWatermark },
+              ].sort((a, b) => a.sortOrder - b.sortOrder),
+            });
           }}
         />
       }
@@ -274,7 +303,7 @@ const MapApp = () => {
           {token ? (
             <TPSMap
               onLevelChange={(level) => {
-                setLevel(level);
+                handleUpdateSettings({ level });
               }}
               venueLayoutId={
                 isNaN(Number(layoutId)) ? undefined : Number(layoutId)
@@ -314,9 +343,11 @@ const MapApp = () => {
                   component: (
                     <WheelchairsToggle
                       wheelchairs={wheelchairs}
-                      setWheelchairs={(update) =>
-                        setWheelchairs((prev) => ({ ...prev, ...update }))
-                      }
+                      setWheelchairs={(update) => {
+                        handleUpdateSettings({
+                          wheelchairs: { ...wheelchairs, ...update },
+                        });
+                      }}
                     />
                   ),
                   wrapperStyles: { margin: "22px 22px 0 0" },
