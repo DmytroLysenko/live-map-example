@@ -1,6 +1,6 @@
 import { Layout } from "antd";
 import styled from "styled-components";
-import { VIEWPORT_BRAKE_POINT } from "../../constants";
+import { VIEWPORT_BREAK_POINT } from "../../constants";
 
 const StyledLayout = styled(Layout)`
   color: #020202;
@@ -10,7 +10,7 @@ const StyledLeftSidebar = styled(Layout.Sider)`
   border-right: 2px solid #c5c5c5;
   background-color: white;
   color: inherit;
-  @media only screen and (max-width: ${VIEWPORT_BRAKE_POINT - 1}px) {
+  @media only screen and (max-width: ${VIEWPORT_BREAK_POINT - 1}px) {
     display: none;
   }
 `;
@@ -26,7 +26,7 @@ const StyledRightSidebar = styled(Layout.Sider)`
   overflow: hidden;
   background-color: white;
   color: inherit;
-  @media only screen and (min-width: ${VIEWPORT_BRAKE_POINT}px) {
+  @media only screen and (min-width: ${VIEWPORT_BREAK_POINT}px) {
     display: none;
   }
 `;

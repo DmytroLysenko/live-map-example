@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { VIEWPORT_BRAKE_POINT } from "../../constants";
+import { VIEWPORT_BREAK_POINT } from "../../constants";
 
 const StyledContainer = styled.div`
   & > div {
@@ -7,7 +7,7 @@ const StyledContainer = styled.div`
     margin-bottom: 22px;
   }
   & > div.tags-view {
-    @media only screen and (max-width: ${VIEWPORT_BRAKE_POINT - 1}px) {
+    @media only screen and (max-width: ${VIEWPORT_BREAK_POINT - 1}px) {
       display: none;
     }
     display: flex;
@@ -36,7 +36,7 @@ const StyledContainer = styled.div`
     }
   }
   & > div.select-view {
-    @media only screen and (min-width: ${VIEWPORT_BRAKE_POINT}px) {
+    @media only screen and (min-width: ${VIEWPORT_BREAK_POINT}px) {
       display: none;
     }
   }

@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import { VIEWPORT_BRAKE_POINT } from "../../../../constants";
+import { VIEWPORT_BREAK_POINT } from "../../../../constants";
 
 const StyledContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  @media only screen and (min-width: ${VIEWPORT_BRAKE_POINT}px) {
+  @media only screen and (min-width: ${VIEWPORT_BREAK_POINT}px) {
     display: none;
   }
 `;
