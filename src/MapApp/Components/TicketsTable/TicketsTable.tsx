@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Table } from "antd";
-import { IActionState, ITicket } from "../../../../types";
+import { IActionState, ITicket } from "../../types";
 
 import { useTicketColumns } from "./useTicketColumns";
 
@@ -14,24 +14,27 @@ interface IProps {
   onHover: (id: IMapItemIdentifies | undefined) => void;
   onClick: (id: IMapItemIdentifies) => void;
   onDeleteTicket: (ticketId: ITicket["id"]) => void;
+  detailed: boolean;
 }
 
-const TicketsMobile = ({
+const TicketsTable = ({
   tickets,
   onClick,
   onHover,
   onDeleteTicket,
+  detailed,
 }: IProps) => {
   const columns = useTicketColumns({ onDeleteTicket });
 
   return (
     <TicketsMobileWrapper>
       <Table
+        rowKey="id"
         size="small"
         columns={columns}
         dataSource={tickets}
         pagination={false}
-        scroll={{ y: 38 * 8 }}
+        scroll={detailed ? undefined : { y: 38 * 8 }}
         showSorterTooltip={false}
         onRow={(ticket) => {
           return {
@@ -48,4 +51,4 @@ const TicketsMobile = ({
   );
 };
 
-export default TicketsMobile;
+export default TicketsTable;

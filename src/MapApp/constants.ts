@@ -8,6 +8,7 @@ import {
   ITicket,
   IWatermark,
   WatermarkColors,
+  IMapSettings,
 } from "./types";
 
 const WATERMARK_1: IWatermark = {
@@ -157,3 +158,17 @@ export const DEFAULT_COLOR = "#BFE5BB";
 export const HEADER_HEIGHT = 50;
 export const FOOTER_HEIGHT = 120;
 export const SIDEBAR_WIDTH = 400;
+
+export const DEFAULT_MAP_SETTINGS: IMapSettings = {
+  token:
+    "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJxY3VlLWF1dGhlbnRpY2F0aW9uIiwiYXVkIjoicWN1ZS1hdXRoZW50aWNhdGlvbiIsIm5iZiI6MTc0NzExMjQ5OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDg3IiwiYXV0aGVudGljYXRpb25JZCI6LTIsImV4cCI6NDg3MTI1MDc0NiwidXNlck5hbWUiOiJvbGUtbWFwLWNvbXBvbmVudCIsImlhdCI6MTc0NzExMjQ5OCwianRpIjoiOThjNWViOGMtZGExMS00YzM4LWE4MmMtYzE4MGUyMzgzNDU5In0.lwKhyOGTe7RUd6v9cYH97hLrco3jJJyLIrLrEfNiHmHrtfoDUU6mqhoIqDmG73rp368AWEDNkhlXQbqebsZnpaCgXfvsXDPeCQ1NtyBoWYJEap67zLBoTHRsTsgOVRfTGjOpLsx9pjG3hJ7WdnGfbVNyzcnDCyuDVesbK1CP058hZ_4poJ1GE-4JL-U0VGY-2qd5U3yYuwmsMJU8l2Yzcx9kuF8YZodpbAB9AvvwtWK-rap5N58Bze6AIFLp3rzvvW9YW20qYoiJBkE3YEB698W3HmhlJMM3ScKd9Lcoeoxb5b9c5eIDl5wdOOLJ7CDwsVme8Pf1DMgAAir7wMoDZA",
+  tickets: DEFAULT_TICKETS,
+  watermarks: WATERMARKS,
+  layoutId: "1339713",
+  wheelchairs: { show: true, basedOnRows: false },
+  labelingByData: true,
+  level: "section",
+  defaultItemStyles: DEFAULT_ITEM_STYLES_STATE,
+  mapSize: DEFAULT_MAP_SIZE_STATE,
+  flyToState: DEFAULT_FLY_TO_STATE,
+};

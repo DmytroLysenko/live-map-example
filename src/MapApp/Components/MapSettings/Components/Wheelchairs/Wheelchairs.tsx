@@ -11,17 +11,8 @@ interface IProps {
 
 const Wheelchairs = ({ setWheelchairs, value }: IProps) => {
   return (
-    <Section style={{ display: "flex", gap: 10, alignItems: "center" }}>
-      <Flex align="center" gap={10}>
-        <input
-          type="checkbox"
-          checked={value.show}
-          onChange={({ target: { checked } }) =>
-            setWheelchairs({ show: checked })
-          }
-        />
-        <Label label="Wheelchairs" />
-      </Flex>
+    <Section name="Wheelchairs">
+      <Label label="Wheelchairs" />
       <Flex align="center" gap={10}>
         <input
           type="checkbox"

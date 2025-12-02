@@ -1,32 +1,10 @@
 import React from "react";
 
-import Tickets from "./components/Tickets";
-import LayoutFilter from "./components/LayoutFilter/LayoutFilter";
-import TokenFilter from "./components/TokenFilter";
-import NewTicketForm from "./components/NewTicketForm";
-import Labeling from "./components/Labeling";
-import Wheelchairs from "./components/Wheelchairs";
-import DefaultItemStyles from "./components/DefaultItemStyles";
-import FlyToOptions from "./components/FlyToOptions";
-import MapSize from "./components/MapSize";
-import Section from "./components/Section";
-import Watermarks from "./components/Watermarks";
-
-import {
-  NewTicket,
-  ITicket,
-  IFlyToState,
-  IActionState,
-  IMapSizeState,
-  IWheelchairsState,
-  IWatermark,
-  WatermarkUpdate,
-  NewWatermark,
-} from "../../types";
-import Label from "./components/Label";
+import { ITicket, IActionState } from "../../types";
 import StyledSidebar from "./StyledSidebar";
+import TicketsMobile from "../TicketsTable";
 
-import type { IMapItemIdentifies, IMapProps } from "@onlocation/tps-map";
+import type { IMapItemIdentifies } from "@onlocation/tps-map";
 
 interface IProps {
   tickets: ITicket[];
@@ -34,100 +12,25 @@ interface IProps {
   onHover: (id: IMapItemIdentifies | undefined) => void;
   onClick: (id: IMapItemIdentifies) => void;
   onDeleteTicket: (ticketId: ITicket["id"]) => void;
-  setToken: (token: string | null) => void;
-  setLabelingByData: (value: boolean) => void;
-  labelingByData: boolean;
-  layoutId: string;
-  onLayoutIdChange: (id: string) => void;
-  onAddTicket: (newTicket: NewTicket) => void;
-  wheelchairs: IWheelchairsState;
-  setWheelchairs: (update: Partial<IWheelchairsState>) => void;
-  defaultItemStyles: IMapProps["defaultItemStyles"];
-  onActiveStylesChange: (
-    update: Partial<Required<IMapProps>["defaultItemStyles"]>
-  ) => void;
-  mapSize: IMapSizeState;
-  onSizeChange: (update: Partial<IMapSizeState>) => void;
-  flyToOptions: IFlyToState;
-  onFlyToChange: (update: Partial<IFlyToState>) => void;
-  watermarks: IWatermark[];
-  onWatermarkUpdate: (update: WatermarkUpdate) => void;
-  onWatermarkDelete: (watermarkId: IWatermark["id"]) => void;
-  onWatermarkAdd: (watermark: NewWatermark) => void;
 }
 
 const Sidebar = ({
   tickets,
+  actionState,
   onHover,
   onClick,
   onDeleteTicket,
-  setToken,
-  actionState,
-  layoutId,
-  onLayoutIdChange,
-  onAddTicket,
-  setLabelingByData,
-  labelingByData,
-  wheelchairs,
-  setWheelchairs,
-  defaultItemStyles,
-  onActiveStylesChange,
-  mapSize,
-  onSizeChange,
-  flyToOptions,
-  onFlyToChange,
-  watermarks,
-  onWatermarkUpdate,
-  onWatermarkDelete,
-  onWatermarkAdd,
 }: IProps) => {
   return (
     <StyledSidebar>
-      <Section
-        style={{
-          backgroundColor: "#c5c5c5",
-          fontSize: "14px",
-          fontWeight: "bold",
-          textAlign: "center",
-          position: "sticky",
-          top: 0,
-          left: 0,
-        }}
-      >
-        This Side Pane is not part of the Widget.
-      </Section>
-      <TokenFilter onTokenChange={setToken} />
-      <LayoutFilter layoutId={layoutId} onChange={onLayoutIdChange} />
-      <NewTicketForm onAddTicket={onAddTicket} watermarks={watermarks} />
-      <Section
-        name="Tickets"
-        style={{ flex: "auto", display: "flex", flexDirection: "column" }}
-        defaultOpen={false}
-        className="tickets-section"
-      >
-        <Label label="Tickets" />
-        <Tickets
-          tickets={tickets}
-          actionState={actionState}
-          onHover={onHover}
-          onClick={onClick}
-          onDeleteTicket={onDeleteTicket}
-        />
-      </Section>
-      <Watermarks
-        watermarks={watermarks}
-        onWatermarkUpdate={onWatermarkUpdate}
-        onWatermarkDelete={onWatermarkDelete}
-        onWatermarkAdd={onWatermarkAdd}
+      <TicketsMobile
+        detailed
+        tickets={tickets}
+        actionState={actionState}
+        onHover={onHover}
+        onClick={onClick}
+        onDeleteTicket={onDeleteTicket}
       />
-      <MapSize mapSize={mapSize} onSizeChange={onSizeChange} />
-      <DefaultItemStyles
-        styles={defaultItemStyles}
-        onActiveStylesChange={onActiveStylesChange}
-      />
-      <FlyToOptions flyToOptions={flyToOptions} onChange={onFlyToChange} />
-      <Wheelchairs setWheelchairs={setWheelchairs} value={wheelchairs} />
-      <Labeling onLabelingChange={setLabelingByData} value={labelingByData} />
     </StyledSidebar>
   );
 };

@@ -16,7 +16,14 @@ const MenuButton = ({ collapsed, onCollapse }: IProps) => {
         type="text"
         style={{ color: "white" }}
         onClick={() => onCollapse(!collapsed)}
-        icon={!collapsed ? <MenuOpenIcon /> : <MenuIcon />}
+        icon={
+          <i
+            className="material-icons"
+            style={{ cursor: "pointer", fontSize: "20px", color: "red" }}
+          >
+            settings
+          </i>
+        }
       />
     </StyledContainer>
   );

@@ -1,8 +1,11 @@
 import React from "react";
 
 import Logo from "./components/Logo";
+import { Flex, Menu } from "antd";
 import StyledContainer from "./StyledContainer";
 import MenuButton from "./components/MenuButton";
+import NavMenu from "./components/NavMenu";
+import UnderHeader from "./components/UnderHeader";
 
 interface IProps {
   collapsed: boolean;
@@ -13,9 +16,7 @@ const Header = ({ collapsed, onCollapse }: IProps) => {
   return (
     <StyledContainer>
       <Logo />
-      <div className="central" style={{ color: "white" }}>
-        Interactive Venue Map Widget
-      </div>
+      <NavMenu />
       <MenuButton collapsed={collapsed} onCollapse={onCollapse} />
     </StyledContainer>
   );
