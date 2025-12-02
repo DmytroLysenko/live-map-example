@@ -78,6 +78,9 @@ const NewTicketForm = ({ onAddTicket, watermarks }: IProps) => {
           }
         />
         <Select
+          styles={{
+            popup: { root: { zIndex: 2500 } },
+          }}
           placeholder="Packages"
           value={ticket.watermarks.map((w) => w.id)}
           options={watermarks}

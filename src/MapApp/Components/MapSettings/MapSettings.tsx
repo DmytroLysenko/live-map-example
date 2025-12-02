@@ -77,6 +77,7 @@ const MapSettings = ({
           position: "sticky",
           top: 0,
           left: 0,
+          zIndex: 3000,
         }}
       >
         This Side Pane is not part of the Widget.
