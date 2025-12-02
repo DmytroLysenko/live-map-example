@@ -12,7 +12,7 @@ const WheelchairsToggle = ({ wheelchairs, setWheelchairs }: IProps) => {
   const isShown = wheelchairs.show;
   return (
     <Flex
-      style={{height: "44px"}}
+      style={{ height: "44px" }}
       align="center"
       justify="center"
     >
