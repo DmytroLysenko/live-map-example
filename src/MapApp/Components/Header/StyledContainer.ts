@@ -9,17 +9,6 @@ const StyledContainer = styled.div`
   align-items: center;
   justify-content: space-between;
 
-  // & > div.central {
-  //   flex: auto;
-  //   text-align: center;
-  //   color: white;
-  //   font-size: 14px;
-  //   line-height: 1;
-  //   font-weight: bold;
-  //   @media only screen and (min-width: ${VIEWPORT_BREAK_POINT}px) {
-  //     font-size: 18px;
-  //   }
-  // }
 `;
 
 export default StyledContainer;
