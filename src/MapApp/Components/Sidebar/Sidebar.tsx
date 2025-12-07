@@ -8,28 +8,31 @@ import type { IMapItemIdentifies } from "@onlocation/tps-map";
 
 interface IProps {
   tickets: ITicket[];
-  actionState: IActionState;
   onHover: (id: IMapItemIdentifies | undefined) => void;
   onClick: (id: IMapItemIdentifies) => void;
   onDeleteTicket: (ticketId: ITicket["id"]) => void;
+  onResetSelection: () => void;
+  isSelected: boolean;
 }
 
 const Sidebar = ({
   tickets,
-  actionState,
   onHover,
   onClick,
   onDeleteTicket,
+  onResetSelection,
+  isSelected,
 }: IProps) => {
   return (
     <StyledSidebar>
       <TicketsMobile
         detailed
         tickets={tickets}
-        actionState={actionState}
         onHover={onHover}
         onClick={onClick}
         onDeleteTicket={onDeleteTicket}
+        onResetSelection={onResetSelection}
+        isSelected={isSelected}
       />
     </StyledSidebar>
   );

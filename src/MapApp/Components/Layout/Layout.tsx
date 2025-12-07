@@ -7,6 +7,8 @@ import {
   StyledRightSidebar,
 } from "./StyledLayout";
 import Header from "../Header";
+import Footer from "../Footer";
+import EventBanner from "../EventBanner";
 
 interface IProps {
   children?: React.ReactNode;
@@ -18,15 +20,22 @@ const AppLayout = ({ children, leftSidebar, rightSidebar }: IProps) => {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <StyledLayout style={{ height: "100vh", overflow: "hidden" }}>
-      <StyledLayout.Header style={{ padding: 0 }}>
+      <StyledLayout.Header
+        style={{ padding: 0, backgroundColor: "white", display: "flex" }}
+      >
         <Header
           collapsed={collapsed}
           onCollapse={(collapsed) => setCollapsed(collapsed)}
         />
       </StyledLayout.Header>
+      <StyledLayout.Header
+        style={{ padding: 0, height: "unset", lineHeight: "unset" }}
+      >
+        <EventBanner />
+      </StyledLayout.Header>
       <Layout>
         {leftSidebar && (
-          <StyledLeftSidebar width={"350px"} theme="light">
+          <StyledLeftSidebar width={"370px"} theme="light">
             {leftSidebar}
           </StyledLeftSidebar>
         )}
@@ -46,6 +55,9 @@ const AppLayout = ({ children, leftSidebar, rightSidebar }: IProps) => {
           </StyledRightSidebar>
         )}
       </Layout>
+      <StyledLayout.Footer style={{ padding: 0 }}>
+        <Footer />
+      </StyledLayout.Footer>
     </StyledLayout>
   );
 };

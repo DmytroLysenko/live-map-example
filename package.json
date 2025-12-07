@@ -16,7 +16,7 @@
   "license": "ISC",
   "description": "TPS map component, React 19",
   "dependencies": {
-    "@onlocation/tps-map": "^2.3.2",
+    "@onlocation/tps-map": "^2.3.8",
     "antd": "^5.27.3",
     "jotai": "^2.15.0",
     "styled-components": "^6.1.18"

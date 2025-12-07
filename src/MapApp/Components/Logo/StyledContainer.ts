@@ -5,21 +5,16 @@ import { VIEWPORT_BREAK_POINT } from "../../constants";
 const StyledContainer = styled(Flex)`
   align-items: center;
   gap: 8px;
-  background-color: black;
-  color: white;
 
-  padding: 8px 5%;
-
-  @media only screen and (min-width: ${VIEWPORT_BREAK_POINT}px) {
-    font-size: 18px;
-  }
+  font-size: 14px;
 
   & svg {
-    fill: white;
     height: 20px;
     width: auto;
-
-    @media only screen and (min-width: ${VIEWPORT_BREAK_POINT}px) {
+  }
+  @media only screen and (min-width: ${VIEWPORT_BREAK_POINT}px) {
+    font-size: 18px;
+    & svg {
       height: 30px;
     }
   }

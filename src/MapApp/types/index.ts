@@ -74,5 +74,5 @@ export interface IMapSettings {
   level: "row" | "section";
   defaultItemStyles: IMapProps["defaultItemStyles"];
   mapSize: IMapSizeState;
-  flyToState: IFlyToState
+  flyToState: IFlyToState;
 }

@@ -1,13 +1,16 @@
 import React from "react";
-
+import { Flex, Typography } from "antd";
+import { OLLogoIcon } from "../Icons";
 import StyledContainer from "./StyledContainer";
-import { OLLogoIcon } from "../../../Icons";
-import { Typography } from "antd";
 
-const Logo = () => {
+interface IProps {
+  iconColor: string;
+}
+
+const Logo = ({ iconColor }: IProps) => {
   return (
     <StyledContainer>
-      <OLLogoIcon />
+      <OLLogoIcon style={{ color: iconColor }} />
       <Typography.Text
         style={{ color: "white", margin: 0, fontSize: "inherit" }}
       >
