@@ -1,4 +1,5 @@
 export const VIEWPORT_BREAK_POINT = 900;
+export const MAP_SETTINGS_STORAGE_KEY = "mapSettings";
 
 import { IMapProps } from "@onlocation/tps-map";
 import {

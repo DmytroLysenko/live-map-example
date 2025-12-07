@@ -10,11 +10,12 @@ import TicketsMobileWrapper from "./TicketsStyledWrapper";
 
 interface IProps {
   tickets: ITicket[];
-  actionState: IActionState;
   onHover: (id: IMapItemIdentifies | undefined) => void;
   onClick: (id: IMapItemIdentifies) => void;
   onDeleteTicket: (ticketId: ITicket["id"]) => void;
   detailed: boolean;
+  onResetSelection: () => void;
+  isSelected: boolean;
 }
 
 const TicketsTable = ({
@@ -23,8 +24,15 @@ const TicketsTable = ({
   onHover,
   onDeleteTicket,
   detailed,
+  onResetSelection,
+  isSelected,
 }: IProps) => {
-  const columns = useTicketColumns({ onDeleteTicket });
+  const columns = useTicketColumns({
+    onDeleteTicket,
+    detailed,
+    onResetSelection,
+    isSelected,
+  });
 
   return (
     <TicketsMobileWrapper>
@@ -34,7 +42,7 @@ const TicketsTable = ({
         columns={columns}
         dataSource={tickets}
         pagination={false}
-        scroll={detailed ? undefined : { y: 38 * 8 }}
+        scroll={detailed ? undefined : { y: 38 * 7 }}
         showSorterTooltip={false}
         onRow={(ticket) => {
           return {
@@ -43,6 +51,9 @@ const TicketsTable = ({
             },
             onMouseEnter: () => {
               onHover({ sectionName: ticket.section, rowName: ticket.row });
+            },
+            onMouseLeave: () => {
+              onHover(undefined);
             },
           };
         }}

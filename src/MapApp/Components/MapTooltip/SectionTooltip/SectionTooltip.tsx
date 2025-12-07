@@ -9,7 +9,7 @@ import { ITicket, IWatermark } from "../../../types";
 
 interface IProps {
   sectionName: string;
-  tickets?: ITicket[];
+  tickets: ITicket[];
 }
 
 const SectionTooltip = ({ sectionName, tickets }: IProps) => {

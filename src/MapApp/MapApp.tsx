@@ -5,21 +5,36 @@ import { Flex } from "antd";
 import { OLLogoIcon } from "./Components/Icons";
 import Layout from "./Components/Layout";
 import { RowTooltip, SectionTooltip } from "./Components/MapTooltip";
-import Footer from "./Components/Footer";
+import WatermarkSelector from "./Components/WatermarkSelector";
 import StyledContent from "./StyledContent";
 import TicketsTable from "./Components/TicketsTable";
 import MapSettings from "./Components/MapSettings";
 import Sidebar from "./Components/Sidebar";
 
-import { DEFAULT_ACTION_STATE, DEFAULT_MAP_SETTINGS } from "./constants";
+import {
+  DEFAULT_ACTION_STATE,
+  DEFAULT_MAP_SETTINGS,
+  MAP_SETTINGS_STORAGE_KEY,
+} from "./constants";
+import {
+  getSectionAndRowByRowKey,
+  getStylesProps,
+  getWatermarkByOrderAndSelected,
+} from "./utils";
 
-import { getCurrentWatermark, isTicketSelected } from "./utils";
+import { useRows } from "./hooks/useRows";
+import { useFocusEffect } from "./hooks/useFocusEffest";
+import { useSections } from "./hooks/useSections";
+import { useInnerFlyOn } from "./hooks/useInnerFlyOn";
 
-import type { IMapItem, IMapProps } from "@onlocation/tps-map";
+import type { IMapItem } from "@onlocation/tps-map";
 import { IMapSettings, ItemAction, ITicket, IWatermark } from "./types";
 import WheelchairsToggle from "./Components/WheelchairsToggle";
 
-const MAP_SETTINGS_STORAGE_KEY = "mapSettings";
+import "leaflet/dist/leaflet.css";
+import "leaflet.pattern";
+import { useFilteredTickets } from "./hooks/useFilteredTickets";
+import { useSelectEffect } from "./hooks/useSelectEffect";
 
 const MapApp = () => {
   const [mapSettings, setSettings] = useState<IMapSettings>(() => {
@@ -28,7 +43,11 @@ const MapApp = () => {
       if (stored) {
         const parsed = JSON.parse(stored);
         // Merge with defaults to ensure any new keys get default values
-        return { ...DEFAULT_MAP_SETTINGS, ...parsed } as IMapSettings;
+        return {
+          ...DEFAULT_MAP_SETTINGS,
+          ...parsed,
+          level: DEFAULT_MAP_SETTINGS.level,
+        } as IMapSettings;
       }
     } catch (_) {
       // swallow parsing errors and fall back to defaults
@@ -37,6 +56,7 @@ const MapApp = () => {
   });
   const [actionState, setActionState] = useState(DEFAULT_ACTION_STATE);
 
+  const { selectedWatermarks, selected, focus, hover } = actionState;
   const {
     token,
     tickets,
@@ -50,14 +70,33 @@ const MapApp = () => {
     flyToState,
   } = mapSettings;
 
+  const isSelectMode = !!selected.length;
+  const rows = useRows(tickets);
+  const sections = useSections(tickets);
+  const innerFlyOn = useInnerFlyOn(flyToState);
+  const filteredTickets = useFilteredTickets({
+    tickets,
+    selectedWatermarks,
+    selectedItems: selected,
+  });
+  // reset focus - only for the fly effect
+  useFocusEffect(actionState.focus, () =>
+    setActionState((prev) => ({ ...prev, focus: undefined }))
+  );
+  // auto-switching the selection according to the level
+  useSelectEffect(
+    level,
+    selected,
+    (update) => setActionState((prev) => ({ ...prev, selected: update })),
+    sections,
+    isSelectMode
+  );
+
   const handleUpdateSettings = (update: Partial<IMapSettings>) => {
     setSettings((prev) => {
       const next = { ...prev, ...update } as IMapSettings;
       try {
-        sessionStorage.setItem(
-          MAP_SETTINGS_STORAGE_KEY,
-          JSON.stringify(next)
-        );
+        sessionStorage.setItem(MAP_SETTINGS_STORAGE_KEY, JSON.stringify(next));
       } catch (_) {
         // Ignore write errors
       }
@@ -65,89 +104,65 @@ const MapApp = () => {
     });
   };
 
-  const handleDeleteTicket = (id: ITicket["id"]) => {
-    handleUpdateSettings({ tickets: tickets.filter((item) => item.id !== id) });
-  };
-
-  const filteredTickets = useMemo(() => {
-    const { selectedWatermarks } = actionState;
-    const selectedWatermarkIds = selectedWatermarks.map((item) => item.id);
-    return tickets.filter((item) => {
-      if (
-        selectedWatermarkIds.length &&
-        (!item.watermarks ||
-          !item.watermarks.some((w) => selectedWatermarkIds.includes(w.id)))
-      ) {
-        return false;
-      }
-      if (
-        actionState.selected.length &&
-        !isTicketSelected(actionState.selected, item)
-      ) {
-        return false;
-      }
-      return true;
-    });
-  }, [tickets, actionState.selectedWatermarks, actionState.selected]);
+  const onResetSelection = () =>
+    setActionState((prev) => ({
+      ...prev,
+      selected: DEFAULT_ACTION_STATE.selected,
+    }));
 
   const mapItems = useMemo(() => {
-    const ticketsMapBySectionName = tickets.reduce((result, ticket) => {
-      const tickets = [...(result.get(ticket.section) || [])];
-      tickets.push(ticket);
-      result.set(ticket.section, tickets);
-      return result;
-    }, new Map<ITicket["section"], ITicket[]>());
+    const mapItems: IMapItem[] = [];
+    rows.forEach((rowData, rowKey) => {
+      const { tickets: rowTickets, watermarks: rowWatermarks } = rowData;
+      const { rowName, sectionName } = getSectionAndRowByRowKey(rowKey) || {};
 
-    return tickets.map((ticket) => {
-      const { selectedWatermarks } = actionState;
-      const sectionWatermarks = (
-        ticketsMapBySectionName.get(ticket.section) || []
-      ).reduce((result, ticket) => {
-        if (ticket.watermarks?.length) {
-          ticket.watermarks.forEach((w) => {
-            const isNew = !result.some((item) => item.id === w.id);
-            isNew && result.push(w);
-          });
-        }
-        return result;
-      }, [] as IWatermark[]);
-      const watermark = getCurrentWatermark(
-        level === "row" ? ticket.watermarks : sectionWatermarks,
-        selectedWatermarks
-      );
-      return {
-        sectionName: ticket.section,
-        rowName: ticket.row,
-        inactiveStyles: watermark
-          ? {
-              fillColor: watermark.color,
-            }
-          : undefined,
-        activeStyles: watermark
-          ? {
-              fillColor: watermark.color,
-            }
-          : undefined,
-        rowTooltip: <RowTooltip ticket={ticket} />,
-        sectionTooltip: (
-          <SectionTooltip
-            sectionName={ticket.section}
-            tickets={ticketsMapBySectionName.get(ticket.section)}
-          />
-        ),
-      } as IMapItem;
+      if (rowName && sectionName) {
+        const {
+          tickets: sectionTickets = [],
+          watermarks: sectionWatermarks = [],
+        } = sections.get(sectionName) || {};
+
+        const watermarks = level === "row" ? rowWatermarks : sectionWatermarks;
+        const watermark = getWatermarkByOrderAndSelected(
+          watermarks,
+          selectedWatermarks
+        );
+
+        const isWatermarkSelected =
+          !!selectedWatermarks.length &&
+          !!selectedWatermarks.find((i) => i.id === watermark?.id);
+
+        const interactive = selectedWatermarks.length
+          ? isWatermarkSelected
+          : true;
+        const stylesProps = getStylesProps({
+          fillColor: watermark?.color,
+          isSelectMode,
+        });
+        mapItems.push({
+          sectionName: sectionName,
+          rowName: level === "row" ? rowName : undefined,
+          ...stylesProps,
+          interactive: interactive,
+          rowTooltip: <RowTooltip tickets={rowTickets} />,
+          sectionTooltip: (
+            <SectionTooltip
+              sectionName={sectionName}
+              tickets={sectionTickets}
+            />
+          ),
+        });
+      }
     });
-  }, [
-    level,
-    tickets,
-    actionState.selectedWatermarks,
-    defaultItemStyles?.interactive?.inactive?.fillColor,
-  ]);
+    return mapItems;
+  }, [rows, sections, level, selectedWatermarks, isSelectMode]);
 
   const handleHover = (item: ItemAction | undefined) => {
-    if (!actionState?.focus) {
-      setActionState((prev) => ({ ...prev, hover: item }));
-    }
+    setActionState((prev) => ({ ...prev, hover: item }));
+  };
+
+  const handleDeleteTicket = (id: ITicket["id"]) => {
+    handleUpdateSettings({ tickets: tickets.filter((item) => item.id !== id) });
   };
 
   const handleClick = (item: ItemAction) => {
@@ -155,47 +170,8 @@ const MapApp = () => {
       ...prev,
       focus:
         JSON.stringify(item) === JSON.stringify(prev.focus) ? undefined : item,
-      hover: undefined,
-      selectedWatermarks: [],
     }));
   };
-
-  const handleSelect = (items: ItemAction[]) => {
-    setActionState((prev) => ({
-      ...prev,
-      selected: items,
-      selectedWatermark: undefined,
-    }));
-  };
-
-  const useFlyOn = useMemo(() => {
-    const result: Required<IMapProps>["useFlyOn"] = [];
-    if (flyToState.hover.value) {
-      result.push({
-        type: "hover",
-        fitToCenter: flyToState.hover.fitToCenter,
-        onlyExternal: flyToState.hover.onlyExternal,
-        zoomLevel: flyToState.hover.zoomLevel,
-      });
-    }
-    if (flyToState.focus.value) {
-      result.push({
-        type: "focus",
-        fitToCenter: flyToState.focus.fitToCenter,
-        onlyExternal: flyToState.focus.onlyExternal,
-        zoomLevel: flyToState.focus.zoomLevel,
-      });
-    }
-    if (flyToState.select.value) {
-      result.push({
-        type: "select",
-        fitToCenter: flyToState.select.fitToCenter,
-        onlyExternal: flyToState.select.onlyExternal,
-        zoomLevel: flyToState.select.zoomLevel,
-      });
-    }
-    return result.length ? result : undefined;
-  }, [flyToState]);
 
   useEffect(() => {
     handleUpdateSettings({
@@ -223,10 +199,11 @@ const MapApp = () => {
       leftSidebar={
         <Sidebar
           tickets={filteredTickets}
-          actionState={actionState}
           onHover={handleHover}
           onClick={handleClick}
           onDeleteTicket={handleDeleteTicket}
+          onResetSelection={onResetSelection}
+          isSelected={!!actionState.selected.length}
         />
       }
       rightSidebar={
@@ -302,23 +279,25 @@ const MapApp = () => {
         <div className="map-container">
           {token ? (
             <TPSMap
+              level={level}
               onLevelChange={(level) => {
                 handleUpdateSettings({ level });
               }}
               venueLayoutId={
                 isNaN(Number(layoutId)) ? undefined : Number(layoutId)
               }
+              mapStyles={{ backgroundColor: "white" }}
               extraContent={{
                 "bottom-left": {
                   component: (
-                    <Footer
+                    <WatermarkSelector
                       watermarks={watermarks}
                       selectedWatermarks={actionState.selectedWatermarks}
                       onWatermarkChange={(selectedWatermarks) =>
-                        setActionState((prev) => ({
-                          ...prev,
+                        setActionState({
+                          ...DEFAULT_ACTION_STATE,
                           selectedWatermarks,
-                        }))
+                        })
                       }
                     />
                   ),
@@ -335,26 +314,29 @@ const MapApp = () => {
                       gap={6}
                     >
                       Only on
-                      <OLLogoIcon style={{ width: 16, height: 16 }} />
+                      <OLLogoIcon
+                        style={{ width: 16, height: 16, color: "#CCA669" }}
+                      />
                     </Flex>
                   ),
-                },
-                "top-right": {
-                  component: (
-                    <WheelchairsToggle
-                      wheelchairs={wheelchairs}
-                      setWheelchairs={(update) => {
-                        handleUpdateSettings({
-                          wheelchairs: { ...wheelchairs, ...update },
-                        });
-                      }}
-                    />
-                  ),
-                  wrapperStyles: { margin: "22px 22px 0 0" },
                 },
               }}
               defaultExtraContentOptions={{
                 zoom: { wrapperStyle: { marginLeft: "22px" } },
+                level: {
+                  extraContent: {
+                    right: (
+                      <WheelchairsToggle
+                        wheelchairs={wheelchairs}
+                        setWheelchairs={(update) => {
+                          handleUpdateSettings({
+                            wheelchairs: { ...wheelchairs, ...update },
+                          });
+                        }}
+                      />
+                    ),
+                  },
+                },
               }}
               token={token}
               wheelchairs={wheelchairs.show}
@@ -362,19 +344,21 @@ const MapApp = () => {
               items={mapItems}
               width={mapSize?.width ? `${mapSize.width}px` : undefined}
               height={mapSize?.height ? `${mapSize.height}px` : undefined}
-              hoveredItem={actionState.hover || undefined}
-              focusedItem={actionState.focus || undefined}
-              selectedItems={actionState.selected || undefined}
+              useFlyOn={innerFlyOn}
               labelingSettings={
                 !labelingByData ? { backgroundLabeling: true } : undefined
               }
-              useFlyOn={useFlyOn}
-              useShadeDown={["select"]}
+              mapOptions={{ preferCanvas: true }}
+              disableSelect={false}
+              hoveredItem={actionState.hover || undefined}
+              focusedItem={actionState.focus || undefined}
+              selectedItems={actionState.selected || undefined}
               onItemHover={(item) => {
                 handleHover(item);
               }}
-              onItemsSelect={(item, items) => {
-                handleSelect(items);
+              disablePopups={true}
+              onItemsSelect={(_, items) => {
+                setActionState((prev) => ({ ...prev, selected: items }));
               }}
               onMapHome={() => {
                 setActionState(DEFAULT_ACTION_STATE);
@@ -386,11 +370,12 @@ const MapApp = () => {
         <div className="content-container">
           <TicketsTable
             tickets={filteredTickets}
-            actionState={actionState}
             onHover={handleHover}
             onClick={handleClick}
             onDeleteTicket={handleDeleteTicket}
             detailed={false}
+            onResetSelection={onResetSelection}
+            isSelected={!!actionState.selected.length}
           />
         </div>
       </StyledContent>

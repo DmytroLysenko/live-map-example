@@ -1,17 +1,24 @@
-import { getCurrentWatermark, getStringPrice } from "../../utils";
+import { getWatermarkByOrder, getStringPrice } from "../../utils";
 import { ITicket } from "../../types";
-import { Flex, type TableColumnsType } from "antd";
+import { Flex, Tooltip, type TableColumnsType } from "antd";
+import WatermarkList from "./Components/WatermarkList";
 
 export const useTicketColumns = ({
   onDeleteTicket,
+  detailed,
+  onResetSelection,
+  isSelected,
 }: {
   onDeleteTicket: (ticketId: ITicket["id"]) => void;
+  detailed: boolean;
+  onResetSelection: () => void;
+  isSelected: boolean;
 }) => {
   const columns: TableColumnsType<ITicket> = [
     {
       width: 4,
       render: (_, ticket) => {
-        const watermark = getCurrentWatermark(ticket.watermarks, []);
+        const watermark = getWatermarkByOrder(ticket.watermarks);
         return (
           <div
             style={{
@@ -32,6 +39,15 @@ export const useTicketColumns = ({
       width: 35,
       sorter: (a, b) =>
         a.section.localeCompare(b.section, undefined, { numeric: true }),
+      render: (value, ticket) =>
+        detailed ? (
+          <Flex vertical gap={4}>
+            <strong>{value}</strong>
+            <WatermarkList watermarks={ticket.watermarks} />
+          </Flex>
+        ) : (
+          value
+        ),
     },
     {
       title: "Row",
@@ -55,13 +71,29 @@ export const useTicketColumns = ({
       sorter: (a, b) => a.quantity - b.quantity,
     },
     {
-      width: 10,
+      title: () =>
+        isSelected ? (
+          <Tooltip placement="left" title="Reset selection">
+            <i
+              className="material-icons"
+              style={{ cursor: "pointer", fontSize: "20px", color: "red" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onResetSelection();
+              }}
+            >
+              refresh
+            </i>
+          </Tooltip>
+        ) : null,
+      width: 20,
       align: "center",
       render: (_, ticket) => (
         <Flex align="center" justify="center">
           <i
             className="material-icons"
-            style={{ cursor: "pointer", fontSize: "20px", color: "gray" }}
+            style={{ cursor: "pointer", fontSize: "20px", color: "red" }}
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();

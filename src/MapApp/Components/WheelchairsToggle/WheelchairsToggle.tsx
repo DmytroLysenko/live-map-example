@@ -1,8 +1,9 @@
-import { Button, Flex } from "antd";
 import React from "react";
-import { IWheelchairsState } from "../../types";
+
+import { Button, Flex } from "antd";
 import { AccessibleIcon } from "../Icons";
 
+import { IWheelchairsState } from "../../types";
 interface IProps {
   wheelchairs: IWheelchairsState;
   setWheelchairs: (update: Partial<IWheelchairsState>) => void;
@@ -11,11 +12,7 @@ interface IProps {
 const WheelchairsToggle = ({ wheelchairs, setWheelchairs }: IProps) => {
   const isShown = wheelchairs.show;
   return (
-    <Flex
-      style={{ height: "44px" }}
-      align="center"
-      justify="center"
-    >
+    <Flex style={{ height: "32px" }} align="center" justify="center">
       <Button
         style={{
           borderRadius: "50%",
